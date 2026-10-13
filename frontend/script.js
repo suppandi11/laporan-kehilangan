@@ -1965,6 +1965,21 @@ function dlg(h) {
   $("dialog").showModal();
 }
 
+// Data diri & foto pengambil barang (hanya tampil untuk Admin)
+function takerInfo(reportId) {
+  const t = (DB.returns || []).find((x) => x.lost_report_id === reportId && x.taker_photo);
+  if (!t) return "";
+  return `
+    <h3 class="t" style="margin:16px 0 8px">Data Pengambil Barang</h3>
+    <dl class="dl">
+      <dt>Nama</dt><dd>${esc(t.taker_name)}</dd>
+      <dt>NIM</dt><dd>${esc(t.taker_nim)}</dd>
+      <dt>Program studi</dt><dd>${esc(t.taker_prodi)}</dd>
+      <dt>No. HP</dt><dd>${esc(t.taker_phone)}</dd>
+    </dl>
+    <a href="${t.taker_photo}" target="_blank" rel="noopener"><img src="${t.taker_photo}" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--line)"></a>`;
+}
+
 // Modal Detail Laporan Kehilangan
 function detail(id) {
   const r = DB.reports.find((x) => x.id === id);
@@ -1989,6 +2004,7 @@ function detail(id) {
       ${isAdm ? `<dt>Pelapor</dt><dd>${esc(uname(r.uid))}</dd>` : ""}
       ${expireDate ? `<dt>Masa aktif s/d</dt><dd>${fmt(expireDate)} (Maks. 3 hari)</dd>` : ""}
     </dl>
+    ${isAdm ? takerInfo(r.id) : ""}
     <div class="foot">
       <button class="btn ghost" onclick="$('dialog').close()">Tutup</button>
       ${canDelete() ? `<button class="btn bad" onclick="deleteReport(${r.id})">Hapus Laporan</button>` : ""}
@@ -2040,6 +2056,17 @@ function verif(id) {
     <div class="info-banner" style="margin:12px 0">
       Admin wajib memeriksa kecocokan fisik barang dan identitas sebelum barang diserahkan.
     </div>
+    <div class="f"><label>Nama pengambil <span style="color:var(--err)">*</span></label>
+      <input id="vnama" required maxlength="100" value="${esc(u.name)}"></div>
+    <div class="f"><label>NIM pengambil <span style="color:var(--err)">*</span></label>
+      <input id="vnim" required maxlength="30" value="${esc(u.nim)}"></div>
+    <div class="f"><label>Program studi <span style="color:var(--err)">*</span></label>
+      <input id="vprodi" required maxlength="80" value="${esc(u.prodi)}"></div>
+    <div class="f"><label>Nomor HP / WhatsApp pengambil <span style="color:var(--err)">*</span></label>
+      <input id="vhp" required inputmode="tel" maxlength="16" placeholder="Contoh: 081234567890"></div>
+    <div class="f"><label>Foto KTM / identitas pengambil <span style="color:var(--err)">*</span></label>
+      <input id="vfoto" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewImg(this,'#pv-verif')">
+      <img id="pv-verif" class="img-preview" style="display:none;max-width:100%;max-height:160px;margin-top:8px;border-radius:8px"></div>
     <div class="chk">
       <label><input type="checkbox"> 1. Detail ciri khusus barang sesuai dengan keterangan pelapor</label>
       <label><input type="checkbox"> 2. Isi dalam barang (jika ada) sesuai dengan keterangan pemilik</label>
@@ -2058,7 +2085,47 @@ function verif(id) {
   `);
 }
 
-function submitVerifReturn(id) {
+// Baca & kompres foto agar muat di penyimpanan browser
+function readImageSmall(file, maxSide = 800) {
+  return new Promise((resolve, reject) => {
+    if (!file) return reject(new Error("Foto KTM / identitas pengambil wajib diunggah."));
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type))
+      return reject(new Error("Format foto harus JPG, PNG, atau WEBP."));
+    if (file.size > 5 * 1024 * 1024) return reject(new Error("Ukuran foto maksimal 5 MB."));
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Gagal membaca foto."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("File bukan gambar yang valid."));
+      img.onload = () => {
+        const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const cv = document.createElement("canvas");
+        cv.width = Math.round(img.width * k);
+        cv.height = Math.round(img.height * k);
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        resolve(cv.toDataURL("image/jpeg", 0.7));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitVerifReturn(id) {
+  const takerName = $("#vnama").value.trim();
+  const takerNim = $("#vnim").value.trim();
+  const takerProdi = $("#vprodi").value.trim();
+  const takerHp = $("#vhp").value.trim().replace(/[\s-]/g, "");
+  if (!takerName || !takerNim || !takerProdi)
+    return toast("Lengkapi data diri pengambil (nama, NIM, program studi).");
+  if (!/^(\+62|62|0)8[0-9]{8,12}$/.test(takerHp))
+    return toast("Nomor HP pengambil tidak valid.");
+  let takerPhoto;
+  try {
+    takerPhoto = await readImageSmall($("#vfoto").files[0]);
+  } catch (err) {
+    return toast(err.message);
+  }
   const chks = [...document.querySelectorAll("dialog input[type=checkbox]")];
   if (!chks.every((c) => c.checked)) {
     return toast("Harap centang semua 5 poin verifikasi kepemilikan terlebih dahulu.");
@@ -2078,6 +2145,11 @@ function submitVerifReturn(id) {
     verified_by: ST.user.name,
     returned_at: new Date(),
     notes: notes || "Barang diserahkan setelah verifikasi 5 poin lengkap.",
+    taker_name: takerName,
+    taker_nim: takerNim,
+    taker_prodi: takerProdi,
+    taker_phone: takerHp,
+    taker_photo: takerPhoto,
   });
   saveDB();
   $("dialog").close();
