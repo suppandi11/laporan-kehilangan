@@ -1977,7 +1977,20 @@ function takerInfo(reportId) {
       <dt>Program studi</dt><dd>${esc(t.taker_prodi)}</dd>
       <dt>No. HP</dt><dd>${esc(t.taker_phone)}</dd>
     </dl>
-    <a href="${t.taker_photo}" target="_blank" rel="noopener"><img src="${t.taker_photo}" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--line)"></a>`;
+    ${[
+      [t.taker_photo, "Foto KTM"],
+      [t.taker_receipt, "Struk pembelian"],
+      [t.taker_selfie, "Foto diri pengambil"],
+    ]
+      .filter((x) => x[0])
+      .map(
+        ([src, cap]) => `
+      <figure style="margin:12px 0 0">
+        <a href="${src}" target="_blank" rel="noopener"><img src="${src}" style="display:block;width:100%;max-height:320px;object-fit:contain;background:var(--soft);border-radius:8px;border:1px solid var(--line)"></a>
+        <figcaption class="meta" style="margin-top:4px">${cap}</figcaption>
+      </figure>`,
+      )
+      .join("")}`;
 }
 
 // Modal Detail Laporan Kehilangan
@@ -1990,7 +2003,7 @@ function detail(id) {
 
   dlg(`
     <div class="ph" style="border-radius:8px;margin-bottom:16px;height:160px;overflow:hidden">
-      ${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : ic(IC.photo)}
+      ${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:contain">` : ic(IC.photo)}
     </div>
     ${badge(r.status)}
     <h2 style="margin-top:8px">${esc(r.name)}</h2>
@@ -2023,7 +2036,7 @@ function detailFound(id) {
   if (!f) return;
   dlg(`
     <div class="ph" style="border-radius:8px;margin-bottom:16px;height:160px;overflow:hidden;background:var(--soft)">
-      ${f.photo ? `<img src="${f.photo}" style="width:100%;height:100%;object-fit:cover">` : ic(IC.shield)}
+      ${f.photo ? `<img src="${f.photo}" style="width:100%;height:100%;object-fit:contain">` : ic(IC.shield)}
     </div>
     ${badge(f.status)}
     <h2 style="margin-top:8px">${esc(f.name)}</h2>
@@ -2064,9 +2077,15 @@ function verif(id) {
       <input id="vprodi" required maxlength="80" value="${esc(u.prodi)}"></div>
     <div class="f"><label>Nomor HP / WhatsApp pengambil <span style="color:var(--err)">*</span></label>
       <input id="vhp" required inputmode="tel" maxlength="16" placeholder="Contoh: 081234567890"></div>
-    <div class="f"><label>Foto KTM / identitas pengambil <span style="color:var(--err)">*</span></label>
+    <div class="f"><label>Foto KTM <span style="color:var(--err)">*</span></label>
       <input id="vfoto" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewImg(this,'#pv-verif')">
-      <img id="pv-verif" class="img-preview" style="display:none;max-width:100%;max-height:160px;margin-top:8px;border-radius:8px"></div>
+      <img id="pv-verif" class="img-preview" style="display:none;max-width:100%;max-height:200px;object-fit:contain;margin-top:8px;border-radius:8px"></div>
+    <div class="f"><label>Foto struk pembelian <span style="color:var(--mute);font-weight:400">(opsional)</span></label>
+      <input id="vstruk" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewImg(this,'#pv-struk')">
+      <img id="pv-struk" class="img-preview" style="display:none;max-width:100%;max-height:200px;object-fit:contain;margin-top:8px;border-radius:8px"></div>
+    <div class="f"><label>Foto diri pengambil <span style="color:var(--err)">*</span></label>
+      <input id="vselfie" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewImg(this,'#pv-selfie')">
+      <img id="pv-selfie" class="img-preview" style="display:none;max-width:100%;max-height:200px;object-fit:contain;margin-top:8px;border-radius:8px"></div>
     <div class="chk">
       <label><input type="checkbox"> 1. Detail ciri khusus barang sesuai dengan keterangan pelapor</label>
       <label><input type="checkbox"> 2. Isi dalam barang (jika ada) sesuai dengan keterangan pemilik</label>
@@ -2086,12 +2105,12 @@ function verif(id) {
 }
 
 // Baca & kompres foto agar muat di penyimpanan browser
-function readImageSmall(file, maxSide = 800) {
+function readImageSmall(file, maxSide = 800, label = "Foto KTM") {
   return new Promise((resolve, reject) => {
-    if (!file) return reject(new Error("Foto KTM / identitas pengambil wajib diunggah."));
+    if (!file) return reject(new Error(label + " wajib diunggah."));
     if (!/^image\/(jpeg|png|webp)$/.test(file.type))
-      return reject(new Error("Format foto harus JPG, PNG, atau WEBP."));
-    if (file.size > 5 * 1024 * 1024) return reject(new Error("Ukuran foto maksimal 5 MB."));
+      return reject(new Error(label + ": format harus JPG, PNG, atau WEBP."));
+    if (file.size > 5 * 1024 * 1024) return reject(new Error(label + ": ukuran maksimal 5 MB."));
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Gagal membaca foto."));
     reader.onload = () => {
@@ -2120,9 +2139,12 @@ async function submitVerifReturn(id) {
     return toast("Lengkapi data diri pengambil (nama, NIM, program studi).");
   if (!/^(\+62|62|0)8[0-9]{8,12}$/.test(takerHp))
     return toast("Nomor HP pengambil tidak valid.");
-  let takerPhoto;
+  let takerPhoto, takerReceipt = "", takerSelfie;
   try {
-    takerPhoto = await readImageSmall($("#vfoto").files[0]);
+    takerPhoto = await readImageSmall($("#vfoto").files[0], 800, "Foto KTM");
+    const struk = $("#vstruk").files[0];
+    if (struk) takerReceipt = await readImageSmall(struk, 800, "Foto struk");
+    takerSelfie = await readImageSmall($("#vselfie").files[0], 800, "Foto diri");
   } catch (err) {
     return toast(err.message);
   }
@@ -2150,6 +2172,8 @@ async function submitVerifReturn(id) {
     taker_prodi: takerProdi,
     taker_phone: takerHp,
     taker_photo: takerPhoto,
+    taker_receipt: takerReceipt,
+    taker_selfie: takerSelfie,
   });
   saveDB();
   $("dialog").close();
