@@ -3,14 +3,15 @@ require('dotenv').config();
 
 // Konfigurasi koneksi ke MySQL Laragon
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'lost_and_found_kampus',
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "lost_and_found_kampus",
   port: Number(process.env.DB_PORT) || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  ssl: { rejectUnauthorized: true },
 });
 
 // Uji koneksi awal

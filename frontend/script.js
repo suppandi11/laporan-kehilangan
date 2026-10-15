@@ -25,6 +25,48 @@ const CATS = [
   "Lainnya",
 ];
 
+const PRODI_FAKULTAS = [
+  {
+    fakultas: "Fakultas Teknik & Ilmu Komputer",
+    prodi: [
+      "S-2 Ilmu Komputer",
+      "S-1 Teknik Informatika",
+      "S-1 Sistem Informasi",
+      "S-1 Rekayasa Perangkat Lunak",
+      "S-1 Teknik Industri",
+      "S-1 Teknik Sistem Komputer",
+      "S-1 Ilmu Komputer",
+      "D-3 Sistem Informasi",
+    ],
+  },
+  {
+    fakultas: "Fakultas Ekonomi & Bisnis",
+    prodi: ["S-1 Manajemen", "S-1 Akuntansi", "S-1 Perbankan Syariah"],
+  },
+  {
+    fakultas: "Fakultas Seni & Desain",
+    prodi: [
+      "S-1 Desain Komunikasi Visual (DKV)",
+      "S-1 Film dan Televisi",
+      "S-1 Desain Interior",
+    ],
+  },
+  {
+    fakultas: "Fakultas Ilmu Sosial & Kependidikan",
+    prodi: ["S-1 Hubungan Internasional", "S-1 Pendidikan Bahasa Inggris"],
+  },
+  { fakultas: "Fakultas Psikologi", prodi: ["S-1 Psikologi"] },
+  { fakultas: "Fakultas Hukum", prodi: ["S-1 Hukum"] },
+];
+
+const PRODI_LIST = PRODI_FAKULTAS.flatMap((f) => f.prodi);
+
+const prodiOpts = () =>
+  PRODI_FAKULTAS.map(
+    (f) =>
+      `<optgroup label="${f.fakultas}">${f.prodi.map((p) => `<option value="${p}">${p}</option>`).join("")}</optgroup>`,
+  ).join("");
+
 const LOCS = [
   "Gedung A - Ruang kelas",
   "Gedung A - Toilet lantai 1",
@@ -100,266 +142,125 @@ const IC = {
   chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   check: '<polyline points="20 6 9 17 4 12"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
-  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 };
 
-const logo = `<div class="logo"><img src="assets/logo.png" alt="Logo Lost & Found Kampus">Lost & Found Kampus</div>`;
+const logo = `<div class="logo" onclick="goHome()" style="cursor:pointer" title="Kembali ke halaman awal"><img src="assets/logo.png" alt="Logo Lost & Found Kampus">Lost & Found Kampus</div>`;
 
-// Sample Initial Database State
-const INITIAL_DB = {
-  users: [
-    {
-      id: 1,
-      name: "Rina Marlina",
-      nim: "2211001",
-      prodi: "Teknik Informatika",
-      role: "user",
-    },
-    {
-      id: 2,
-      name: "Dimas Prakoso",
-      nim: "2211014",
-      prodi: "Teknik Sipil",
-      role: "user",
-    },
-    {
-      id: 3,
-      name: "Sari Lubis",
-      nim: "2311020",
-      prodi: "Manajemen",
-      role: "user",
-    },
-    {
-      id: 4,
-      name: "Budi Santoso",
-      nim: "-",
-      prodi: "Keamanan & Logistik",
-      role: "petugas",
-      username: "petugas",
-    },
-    {
-      id: 9,
-      name: "Petugas Kemahasiswaan",
-      nim: "-",
-      prodi: "Pusat Kemahasiswaan",
-      role: "admin",
-      username: "admin",
-    },
-  ],
-  reports: [
-    {
-      id: 1,
-      uid: 1,
-      name: "Dompet kulit hitam",
-      cat: CATS[0],
-      color: "Hitam",
-      brand: "Eiger",
-      loc: "Gedung A - Ruang kelas 305",
-      date: d(1),
-      desc: "Berisi KTM, SIM, dan kartu ATM. Ada gantungan kunci kecil di resleting.",
-      status: "ACTIVE",
-      appr: d(0),
-      photo: "",
-    },
-    {
-      id: 2,
-      uid: 3,
-      name: "Kunci motor Honda",
-      cat: CATS[3],
-      color: "Perak",
-      brand: "Honda",
-      loc: "Gedung A - Parkiran belakang",
-      date: d(2),
-      desc: "Gantungan boneka beruang biru.",
-      status: "PENDING",
-      photo: "",
-    },
-    {
-      id: 3,
-      uid: 2,
-      name: "Earbuds putih",
-      cat: CATS[1],
-      color: "Putih",
-      brand: "Xiaomi",
-      loc: "Gedung B - Perpustakaan",
-      date: d(3),
-      desc: "Case ada stiker huruf D.",
-      status: "FOUND",
-      appr: d(2),
-      photo: "",
-    },
-    {
-      id: 4,
-      uid: 1,
-      name: "Jaket hoodie abu-abu",
-      cat: CATS[4],
-      color: "Abu-abu",
-      brand: "Uniqlo",
-      loc: "Gedung B - Aula",
-      date: d(8),
-      desc: "Ukuran M, ada noda tinta di lengan kiri.",
-      status: "EXPIRED",
-      appr: d(6),
-      photo: "",
-    },
-    {
-      id: 5,
-      uid: 3,
-      name: "Kalkulator ilmiah",
-      cat: CATS[5],
-      color: "Hitam",
-      brand: "Casio",
-      loc: "Gedung B - Ruang kelas 201",
-      date: d(5),
-      desc: "Tertulis nama di bagian belakang.",
-      status: "RETURNED",
-      appr: d(4),
-      photo: "",
-    },
-  ],
-  found: [
-    {
-      id: 101,
-      name: "Earbuds putih dengan case",
-      cat: CATS[1],
-      color: "Putih",
-      brand: "Xiaomi",
-      loc: "Gedung B - Perpustakaan",
-      date: d(2),
-      desc: "Ditemukan di meja baca lantai 2 perpustakaan.",
-      status: "MATCHED",
-      received_by: "Petugas - Budi Santoso",
-      photo: "",
-    },
-    {
-      id: 102,
-      name: "Dompet lipat hitam",
-      cat: CATS[0],
-      color: "Hitam",
-      brand: "Eiger",
-      loc: "Gedung A - Ruang kelas 305",
-      date: d(0),
-      desc: "Diserahkan mahasiswa penemu ke meja admin kemahasiswaan.",
-      status: "APPROVED",
-      received_by: "Admin Kemahasiswaan",
-      photo: "",
-    },
-    {
-      id: 103,
-      name: "Tumbler minum perak",
-      cat: CATS[6],
-      color: "Perak",
-      brand: "Lock&Lock",
-      loc: "Gedung A - Musholah lantai 1",
-      date: d(1),
-      desc: "Tertinggal di dekat tempat wudhu.",
-      status: "PENDING_APPROVAL",
-      received_by: "Petugas - Budi Santoso",
-      photo: "",
-    },
-  ],
-  matches: [
-    {
-      id: 1,
-      lost_report_id: 3,
-      found_item_id: 101,
-      matched_by: "Petugas Kemahasiswaan",
-      matched_at: d(1),
-    },
-  ],
-  returns: [
-    {
-      id: 1,
-      lost_report_id: 5,
-      found_item_id: 99,
-      user_id: 3,
-      verified_by: "Petugas Kemahasiswaan",
-      returned_at: d(3),
-      notes: "Kalkulator diserahkan setelah mencocokkan tulisan nama di balik kalkulator.",
-    },
-  ],
-  msgs: [
-    {
-      id: 1,
-      uid: 2,
-      from: "admin",
-      text: "Halo Dimas, laporan Earbuds putih Anda telah cocok dengan temuan di Perpustakaan. Silakan datang ke kantor kemahasiswaan untuk verifikasi kepemilikan.",
-      at: d(1),
-      read: true,
-      rid: 3,
-      rname: "Earbuds putih",
-    },
-    {
-      id: 2,
-      uid: 2,
-      from: "user",
-      text: "Baik terima kasih Pak, siang ini saya akan ke Gedung A membawa struk pembelian dan dus Earbuds.",
-      at: d(0),
-      read: true,
-      rid: 3,
-      rname: "Earbuds putih",
-    },
-  ],
-};
+// Store API-only (produksi). Tidak ada mock localStorage / INITIAL_DB / password demo.
+// Seluruh data diambil dari backend via JWT. Tidak ada fallback offline.
+let DB = { users: [], reports: [], found: [], msgs: [], matches: [], returns: [] };
+let CATS_DYNAMIC = [];
 
-// Persistence Loader
-let DB = (() => {
+const mapReport = (r) => ({
+  id: r.id,
+  uid: r.user_id,
+  name: r.item_name,
+  cat: r.category_name || CATS[(r.category_id || 7) - 1] || 'Lainnya',
+  category_id: r.category_id,
+  color: r.color,
+  brand: r.brand,
+  loc: r.lost_location || r.loc || '',
+  building: r.building,
+  lost_location: r.lost_location,
+  classroom_number: r.classroom_number,
+  date: r.lost_date || r.created_at,
+  desc: r.description,
+  photo: r.photo || '',
+  status: r.status,
+  appr: r.approved_at || null,
+  expired_at: r.expired_at || null,
+  created_at: r.created_at,
+  user_name: r.user_name,
+  nim: r.nim,
+  prodi: r.prodi,
+});
+
+const mapFound = (f) => ({
+  id: f.id,
+  name: f.item_name,
+  cat: f.category_name || CATS[(f.category_id || 7) - 1] || 'Lainnya',
+  category_id: f.category_id,
+  color: f.color,
+  brand: f.brand,
+  loc: f.found_location || f.loc || '',
+  building: f.building,
+  found_location: f.found_location,
+  classroom_number: f.classroom_number,
+  date: f.found_date || f.created_at,
+  desc: f.description,
+  photo: f.photo || '',
+  status: f.status,
+  received_by: f.received_by_name || f.received_by || '',
+  received_by_id: f.received_by_id,
+  created_at: f.created_at,
+});
+
+const mapMsg = (m) => ({
+  id: m.id,
+  uid: m.user_id,
+  from: m.sender_role,
+  text: m.message,
+  at: m.created_at,
+  read: !!m.is_read,
+  rid: m.report_id,
+  rname: m.report_name || m.rname || null,
+});
+
+async function refreshStore() {
   try {
-    const raw = localStorage.getItem("LOST_FOUND_DB_V2");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      // convert date strings back to Date objects
-      parsed.reports.forEach((r) => {
-        r.date = new Date(r.date);
-        if (r.appr) r.appr = new Date(r.appr);
-      });
-      parsed.found.forEach((f) => (f.date = new Date(f.date)));
-      parsed.msgs.forEach((m) => (m.at = new Date(m.at)));
-      return parsed;
-    }
-  } catch (err) {
-    console.error("Gagal load storage:", err);
-  }
-  return JSON.parse(JSON.stringify(INITIAL_DB));
-})();
-
-function saveDB() {
-  try {
-    localStorage.setItem("LOST_FOUND_DB_V2", JSON.stringify(DB));
-  } catch (e) {
-    console.warn("Storage quota / error:", e);
-  }
-}
-
-function resetDB() {
-  if (confirm("Reset seluruh data ke kondisi awal demo?")) {
-    localStorage.removeItem("LOST_FOUND_DB_V2");
-    DB = JSON.parse(JSON.stringify(INITIAL_DB));
-    toast("Data berhasil direset ke kondisi awal demo");
-    render();
-  }
-}
-
-// Check Auto-Expiry (3 Hari Sesuai README Section 9)
-function checkExpirations() {
-  let changed = false;
-  DB.reports.forEach((r) => {
-    if (r.status === "ACTIVE" && r.appr) {
-      const apprTime = new Date(r.appr).getTime();
-      const diffDays = (NOW.getTime() - apprTime) / (1000 * 60 * 60 * 24);
-      if (diffDays > 3) {
-        r.status = "EXPIRED";
-        changed = true;
+    const [rep, fnd] = await Promise.all([API.req('/api/reports'), API.req('/api/found')]);
+    DB.reports = (rep.data || []).map(mapReport);
+    DB.found = (fnd.data || []).map(mapFound);
+    try {
+      const cats = await API.req('/api/categories');
+      if (Array.isArray(cats.data) && cats.data.length) {
+        CATS_DYNAMIC = cats.data.map((c) => c.name);
+        if (CATS_DYNAMIC.length) {
+          CATS.length = 0;
+          CATS_DYNAMIC.forEach((c) => CATS.push(c));
+        }
+      }
+    } catch (_) {}
+    if (ST.token && ST.user) {
+      if (ST.user.role === 'admin') {
+        const [us, ms, mt, rt] = await Promise.all([
+          API.req('/api/users').catch(() => ({ data: [] })),
+          API.req('/api/messages').catch(() => ({ data: [] })),
+          API.req('/api/matches').catch(() => ({ data: [] })),
+          API.req('/api/returns').catch(() => ({ data: [] })),
+        ]);
+        DB.users = us.data || [];
+        DB.msgs = (ms.data || []).map(mapMsg);
+        DB.matches = mt.data || [];
+        DB.returns = rt.data || [];
+      } else {
+        const ms = await API.req('/api/messages').catch(() => ({ data: [] }));
+        DB.msgs = (ms.data || []).map(mapMsg);
+        if (ST.user.role === 'user') {
+          try {
+            const mine = await API.req('/api/reports?user_id=' + ST.user.id);
+            const mineMapped = (mine.data || []).map(mapReport);
+            const ids = new Set(mineMapped.map((r) => r.id));
+            DB.reports = [...mineMapped, ...DB.reports.filter((r) => !ids.has(r.id))];
+          } catch (_) {}
+        }
       }
     }
-  });
-  if (changed) saveDB();
+  } catch (e) {
+    console.warn('refreshStore gagal:', e.message);
+  }
 }
-checkExpirations();
+
+// saveDB/resetDB dihapus untuk produksi: tidak ada localStorage/demo.
+// Hapus data lewat endpoint DELETE per-item (dicatat audit log).
+
+// Kedaluwarsa 3 hari dihitung backend (approved_at + 3 hari -> expired_at).
+function checkExpirations() {}
 
 let ST = {
   user: null,
-  auth: "login", // 'login' | 'reg'
+  token: sessionStorage.getItem("LF_TOKEN") || null, // JWT backend (produksi)
+  auth: "login", // 'login' | 'reg' | 'reg-success'
   view: "",
   q: "",
   fc: "",
@@ -372,6 +273,37 @@ let ST = {
   pendingChat: null, // if user clicked chat before login
 };
 
+// API backend (produksi, wajib). Tidak ada mode offline/demo.
+const API = {
+  base: "",
+  async req(path, { method = "GET", body, form } = {}) {
+    const headers = {};
+    if (ST.token) headers.Authorization = `Bearer ${ST.token}`;
+    let payload;
+    if (form) {
+      payload = form; // FormData (upload KTM): jangan set Content-Type manual
+    } else if (body !== undefined) {
+      headers["Content-Type"] = "application/json";
+      payload = JSON.stringify(body);
+    }
+    const res = await fetch(`${API.base}${path}`, { method, headers, body: payload });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.success === false) {
+      throw new Error(data.message || `Gagal memuat (${res.status})`);
+    }
+    return data;
+  },
+};
+
+const useApi = () => true;
+
+function setSession(user, token) {
+  ST.user = user;
+  ST.token = token || null;
+  if (token) sessionStorage.setItem("LF_TOKEN", token);
+  else sessionStorage.removeItem("LF_TOKEN");
+}
+
 const $ = (s) => document.querySelector(s);
 const uname = (id) => (DB.users.find((u) => u.id === id) || {}).name || "-";
 const uobj = (id) => DB.users.find((u) => u.id === id) || {};
@@ -383,19 +315,19 @@ function toast(m) {
   t.className = "toast";
   t.textContent = m;
   document.body.append(t);
-  setTimeout(() => t.remove(), 2800);
+  setTimeout(() => { t.classList.add("leaving"); setTimeout(() => t.remove(), 260); }, 2800);
 }
 
 function setR(id, st) {
-  const r = DB.reports.find((x) => x.id === id);
-  if (r) {
-    r.status = st;
-    if (st === "ACTIVE") r.appr = new Date(NOW);
-    saveDB();
-  }
+  // Ganti set lokal: pakai endpoint approve admin (ACTIVE/REJECTED).
+  const approve = st !== 'REJECTED';
+  API.req(`/api/reports/${id}/approve`, { method: 'PATCH', body: { approve } })
+    .then((r) => { toast(r.message); refreshStore().then(() => app()); })
+    .catch((e) => toast(e.message));
 }
 
 const exp = (r) => {
+  if (r.expired_at) return new Date(r.expired_at);
   if (!r.appr) return null;
   const e = new Date(r.appr);
   e.setDate(e.getDate() + 3);
@@ -437,53 +369,144 @@ function kls(e) {
 const nav = (v) => {
   ST.view = v;
   ST.q = ST.fc = ST.fl = ST.fs = ST.fg = "";
+  closeAllDlg();
   render();
 };
 
-function render() {
-  checkExpirations();
-  if (ST.user) return app();
-  const h = location.hash;
-  if (h === "#/admin" || h === "#/petugas" || h === "#/staff") {
-    authStaff();
-  } else if (h === "#/masuk") {
-    auth();
-  } else {
-    beranda();
+async function render() {
+  if (ST.user) {
+    await refreshStore();
+    return app();
   }
+  // Restore sesi JWT setelah refresh. Gagal -> anggap belum login.
+  if (ST.token && !ST._meTried) {
+    ST._meTried = true;
+    try {
+      const r = await API.req("/api/auth/me");
+      ST.user = r.user;
+      return enterAppByRole(r.user);
+    } catch (_) {
+      setSession(null, null);
+      ST._meTried = false;
+    }
+  }
+  // Halaman publik butuh data forum dari API (tanpa login).
+  const h = location.hash;
+  // Portal staf lama (#/staff, #/admin, #/petugas) dilebur ke satu pintu masuk #/masuk.
+  if (h === "#/admin" || h === "#/petugas" || h === "#/staff") {
+    location.hash = "#/masuk";
+    ST.auth = "login";
+    return auth();
+  }
+  if (h === "#/masuk") return auth();
+  await refreshStore();
+  return beranda();
 }
 
 function beranda() {
+  const activeReports = DB.reports.filter((r) => r.status === "ACTIVE" || r.status === "FOUND").length;
+  const officialFound = DB.found.filter((f) => f.status === "APPROVED" || f.status === "MATCHED").length;
+  const waiting = DB.reports.filter((r) => r.status === "PENDING").length;
+  const returned = DB.reports.filter((r) => r.status === "RETURNED").length;
+
   $("#root").innerHTML = `
-    <header style="background:var(--side);color:#fff;padding:14px clamp(16px,4vw,40px);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+    <header class="public-header">
       ${logo}
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button class="btn ghost sm" style="color:#fff;border-color:rgba(255,255,255,.2)" onclick="location.hash='#/';render()">Forum</button>
-        <button class="btn sm" onclick="goLogin('Masuk dengan akun mahasiswa untuk melaporkan kehilangan')">Lapor Kehilangan</button>
-        <button class="btn ghost sm" style="color:#b9c6d8;border-color:rgba(255,255,255,.15)" onclick="location.hash='#/staff';render()">Portal Petugas & Admin</button>
-      </div>
+      <nav class="public-nav" aria-label="Navigasi utama">
+        <a class="public-nav-link" href="#" onclick="event.preventDefault();document.querySelector('#main')?.scrollIntoView({behavior:'smooth'});">Forum barang</a>
+        <button class="btn sm" onclick="goLogin()">Masuk</button>
+      </nav>
     </header>
-    <div style="background:linear-gradient(180deg, var(--soft) 0%, var(--bg) 100%);padding:24px clamp(16px,4vw,40px);border-bottom:1px solid var(--line)">
-      <div style="max-width:1120px;margin:0 auto">
-        <div class="info-banner" style="margin:0 0 16px">
-          <b>📢 Aturan Kampus:</b> Mahasiswa hanya dapat membuat <u>Laporan Barang Hilang</u>. Jika menemukan barang di lingkungan kampus, <b>wajib diserahkan langsung</b> kepada <b>Petugas Keamanan / Admin Kemahasiswaan</b> untuk diproses dan diverifikasi secara resmi.
+
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="home-hero-inner">
+        <div class="home-hero-copy">
+          <span class="home-eyebrow"><span class="home-eyebrow-dot"></span> LAYANAN RESMI KAMPUS</span>
+          <h1 id="home-title">Barang hilang? <span>Mari temukan kembali.</span></h1>
+          <p>Temukan informasi barang temuan, laporkan barang yang hilang, dan pantau prosesnya melalui satu layanan kampus yang mudah digunakan.</p>
+          <div class="home-actions" aria-label="Pilihan tindakan">
+            <button class="btn home-btn-primary" onclick="goLogin('Masuk untuk membuat laporan kehilangan')">${ic(IC.chat)} Laporkan Barang Hilang</button>
+            <button class="btn home-btn-secondary" onclick="focusForumSearch()">${ic(IC.logo)} Cari Barang</button>
+          </div>
+          <p class="home-note">Satu tombol <b>Masuk</b> untuk semua peran: mahasiswa, petugas, dan admin akan otomatis diarahkan ke tampilannya masing-masing setelah masuk. Mahasiswa dapat membuat laporan kehilangan. Barang yang ditemukan wajib diserahkan kepada petugas atau Admin Kemahasiswaan.</p>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mute)">
-          <span>Masa aktif laporan forum: <b>3 Hari</b> setelah di-ACC Admin</span>
-          <span>Butuh bantuan seputar barang? Gunakan tombol <b>💬 Chat Admin</b> pada detail barang.</span>
+        <div class="home-hero-art" aria-hidden="true">
+          <div class="hero-orbit hero-orbit-one"></div><div class="hero-orbit hero-orbit-two"></div>
+          <div class="hero-search-card"><span class="hero-icon-wrap">${ic(IC.logo)}</span><div><b>Lost & Found Kampus</b><small>Satu tempat untuk mencari dan melaporkan</small></div><span class="hero-check">${ic(IC.check)}</span></div>
+          <div class="hero-mini-card hero-mini-top"><span class="hero-mini-icon">${ic(IC.photo)}</span><span><b>Barang temuan</b><small>Informasi resmi kampus</small></span></div>
+          <div class="hero-mini-card hero-mini-bottom"><span class="hero-mini-icon green">${ic(IC.chat)}</span><span><b>Bantuan admin</b><small>Verifikasi lebih terarah</small></span></div>
         </div>
       </div>
-    </div>
-    <main id="main" style="margin:0 auto"></main>
+    </section>
+
+    <section class="home-stats-section" aria-label="Ringkasan data layanan">
+      <div class="home-stats">
+        <div class="home-stat"><span class="home-stat-icon blue">${ic(IC.chat)}</span><div><b>${activeReports}</b><span>Laporan aktif</span></div></div>
+        <div class="home-stat"><span class="home-stat-icon green">${ic(IC.check)}</span><div><b>${officialFound}</b><span>Barang temuan resmi</span></div></div>
+        <div class="home-stat"><span class="home-stat-icon amber">${ic(IC.eye)}</span><div><b>${waiting}</b><span>Menunggu verifikasi</span></div></div>
+        <div class="home-stat"><span class="home-stat-icon purple">${ic(IC.shield)}</span><div><b>${returned}</b><span>Sudah dikembalikan</span></div></div>
+      </div>
+    </section>
+
+    <section class="home-rules">
+      <div class="home-rules-inner"><span class="home-rules-icon">${ic(IC.shield)}</span><div><b>Prosedur barang temuan</b><p>Jika menemukan barang di lingkungan kampus, serahkan langsung kepada Petugas Keamanan atau Admin Kemahasiswaan. Barang akan diperiksa sebelum diumumkan secara resmi.</p></div><span class="home-rule-time">Laporan aktif hingga 3 hari setelah disetujui</span></div>
+    </section>
+
+    <main id="main" class="home-main"></main>
+
+    <footer class="public-footer">
+      <div class="public-footer-inner">
+        <div class="footer-brand">${logo}<p>Layanan informasi barang hilang dan temuan di lingkungan kampus.</p></div>
+        <div class="footer-column"><b>Jelajahi</b><a href="#" onclick="event.preventDefault();document.querySelector('#main')?.scrollIntoView({behavior:'smooth'});">Forum barang</a><button onclick="focusForumSearch()">Cari barang</button><button onclick="goLogin('Masuk untuk membuat laporan kehilangan')">Lapor kehilangan</button></div>
+        <div class="footer-column"><b>Bantuan & akses</b><button onclick="goLogin()">Masuk ke akun Anda</button><span>Satu tombol Masuk untuk mahasiswa, petugas, dan admin. Barang temuan diproses melalui Petugas Keamanan / Admin Kemahasiswaan.</span></div>
+      </div>
+      <div class="footer-bottom"><span>© ${new Date().getFullYear()} Lost & Found Kampus</span><span>Gunakan layanan dengan jujur dan bertanggung jawab.</span></div>
+    </footer>
   `;
   V.forum();
+}
+
+function focusForumSearch() {
+  const search = $("#sq");
+  if (search) {
+    search.focus({ preventScroll: true });
+    search.scrollIntoView({ behavior: "smooth", block: "center" });
+    search.closest(".search-field-wrap")?.classList.add("search-focused");
+    setTimeout(() => search.closest(".search-field-wrap")?.classList.remove("search-focused"), 1100);
+  } else {
+    $("#main")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function goLogin(m) {
   ST.auth = "login";
   if (m) toast(m);
+  // Tutup modal detail kartu yang mungkin masih terbuka.
+  // <dialog> ditempel di document.body (di luar #root), jadi render() tidak menghapusnya.
+  const d = document.querySelector("dialog");
+  if (d && d.open) d.close();
   location.hash = "#/masuk";
   render();
+}
+
+// Logo diklik: kembali ke halaman awal.
+// - Belum login -> Beranda publik (#/)
+// - Sudah login -> Dashboard awal sesuai peran (admin/petugas: dash, mahasiswa: forum)
+function goHome() {
+  closeAllDlg();
+  if (!ST.user) {
+    location.hash = "#/";
+    return render();
+  }
+  if (ST.user.role === "admin") {
+    ST.view = "dash";
+  } else if (ST.user.role === "petugas") {
+    ST.view = "dash_petugas";
+  } else {
+    ST.view = "forum";
+  }
+  ST.q = ST.fc = ST.fl = ST.fs = ST.fg = "";
+  return render();
 }
 
 window.addEventListener("hashchange", () => {
@@ -496,27 +519,39 @@ function pw(id) {
 
 function tpw(id, b) {
   const i = $("#" + id);
+  if (!i) return;
   const s = i.type === "password";
   i.type = s ? "text" : "password";
+  // Ganti ikon tanpa menggeser posisi tombol (ikon selalu 18px, rata tengah).
   b.innerHTML = ic(s ? IC.off : IC.eye);
   b.setAttribute("aria-label", s ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
+  // Jaga fokus tetap di input agar tidak ada lompatan layout.
+  try { i.focus({ preventScroll: true }); } catch (_) { i.focus(); }
+  try {
+    const v = i.value;
+    i.setSelectionRange(v.length, v.length);
+  } catch (_) {}
 }
 
-// Student Login & Register
+// Satu pintu masuk untuk semua peran (mahasiswa / petugas / admin).
+// Peran dibaca dari data akun saat login, lalu otomatis diarahkan ke tampilannya.
+// Regist mahasiswa: Cara B (upload KTM + ACC manual admin), tanpa OTP.
 function auth() {
-  const reg = ST.auth === "reg";
+  const mode = ST.auth === "reg" ? "reg" : ST.auth === "reg-success" ? "reg-success" : "login";
+  if (mode === "reg-success") return authRegSuccess();
+  const reg = mode === "reg";
   $("#root").innerHTML = `
     <div class="auth">
       <div class="hero">
         <div>
           ${logo.replace("<div", "<div style='margin-bottom:48px'")}
           <h1>Barang hilang kembali ke pemilik lewat satu pintu resmi.</h1>
-          <p>Laporkan kehilangan barang Anda, pantau statusnya, dan konsultasikan via chat langsung ke Admin Kemahasiswaan.</p>
+          <p>Satu tombol Masuk untuk semua peran. Mahasiswa, petugas, dan admin masuk dari sini — sistem otomatis mengarahkan sesuai jenis akun.</p>
         </div>
         <ol class="steps">
-          <li><em>1</em><span><b>Buat Laporan Kehilangan</b>Isi ciri khusus, warna, lokasi, dan foto barang Anda.</span></li>
-          <li><em>2</em><span><b>Verifikasi Admin (Maks 3 Hari)</b>Laporan tampil di forum setelah disetujui Admin.</span></li>
-          <li><em>3</em><span><b>Pencocokan & Chat Admin</b>Hubungi Admin via chat mengenai barang yang di-upload untuk verifikasi dan pengambilan.</span></li>
+          <li><em>1</em><span><b>Masuk sesuai akun Anda</b>Mahasiswa memakai NIM, petugas & admin memakai username.</span></li>
+          <li><em>2</em><span><b>Diarahkan otomatis</b>Akun admin ke Dashboard Admin, petugas ke Dashboard Petugas, mahasiswa ke Forum.</span></li>
+          <li><em>3</em><span><b>Belum punya akun?</b>Daftar sebagai mahasiswa dengan NIM resmi + foto KTM, lalu diverifikasi Admin.</span></li>
         </ol>
       </div>
       <div class="pane">
@@ -526,96 +561,114 @@ function auth() {
             <button class="${reg ? "" : "on"}" onclick="ST.auth='login';render()">Masuk</button>
             <button class="${reg ? "on" : ""}" onclick="ST.auth='reg';render()">Daftar Akun</button>
           </div>
-          <h2>${reg ? "Pendaftaran Mahasiswa" : "Masuk Mahasiswa"}</h2>
-          <p class="sub">${reg ? "Gunakan data identitas dan NIM resmi Anda." : "Gunakan NIM dan kata sandi Anda."}</p>
-          <form onsubmit="event.preventDefault();doAuth()">
+          <h2>${reg ? "Pendaftaran Mahasiswa" : "Masuk"}</h2>
+          <p class="sub">${reg ? "Gunakan data identitas dan NIM resmi Anda. Wajib upload foto KTM — akun aktif setelah diverifikasi Admin." : "Mahasiswa masuk dengan NIM, petugas & admin masuk dengan username. Kata sandi wajib diisi."}</p>
+          <form onsubmit="event.preventDefault();doAuth(this)">
             ${reg ? `<div class="f"><label>Nama lengkap</label><input id="rn" placeholder="Contoh: Rina Marlina" required autocomplete="off"></div>` : ""}
-            <div class="f"><label>NIM</label><input id="nim" inputmode="numeric" placeholder="Contoh: 2211001" required autocomplete="off"></div>
-            ${reg ? `<div class="f"><label>Program studi</label><input id="rp" placeholder="Contoh: Teknik Informatika" required autocomplete="off"></div>` : ""}
-            <div class="f"><label>Kata sandi</label>${pw("pw")}</div>
-            <button class="btn block">${reg ? "Daftar Akun Baru" : "Masuk"}</button>
+            <div class="f"><label>${reg ? "NIM" : "NIM / Username"}</label><input id="login_id" inputmode="text" placeholder="${reg ? "Contoh: 2211001" : "Contoh: 2211001 / admin / petugas"}" required autocomplete="off"></div>
+            ${reg ? `<div class="f"><label>Program studi</label><select id="rp" required><option value="">— Pilih program studi —</option>${prodiOpts()}</select></div>` : ""}
+            <div class="f"><label>Kata sandi${reg ? " (min. 6 karakter)" : ""}</label>${pw("pw")}</div>
+            ${reg ? `<div class="f"><label>Konfirmasi kata sandi</label>${pw("pw2")}</div>
+            <div class="f"><label>Foto KTM <span style="color:var(--err)">*</span></label><input id="ktm" type="file" accept="image/jpeg,image/png,image/webp" required onchange="previewImg(this,'#preview-ktm')"><img id="preview-ktm" class="img-preview" style="display:none;max-width:100%;max-height:200px;object-fit:contain;margin-top:8px;border-radius:8px"><small class="meta">JPG/PNG/WEBP, maks 5 MB. Dipakai Admin untuk verifikasi identitas.</small></div>` : ""}
+            <button class="btn block">${reg ? "Kirim Pendaftaran" : "Masuk"}</button>
           </form>
-
-
-          <p class="hint">Petugas atau Admin kampus? <a href="#/staff">Masuk ke Portal Staf</a></p>
+          <p class="hint">Pendaftaran hanya untuk mahasiswa. Petugas & admin dibuat oleh pengelola sistem. Hubungi Admin Kemahasiswaan jika lupa kata sandi.</p>
         </div>
       </div>
     </div>
   `;
 }
 
-
-
-// Staff (Petugas & Admin) Login
-function authStaff() {
+// Layar sukses setelah daftar Cara B: akun PENDING, tanpa auto-login.
+function authRegSuccess() {
   $("#root").innerHTML = `
-    <div class="adm">
-      <div class="card">
-        ${logo}
-        <h2 style="margin:0 0 4px;font-size:22px">Portal Staf Kampus</h2>
-        <p class="sub">Khusus Petugas Keamanan dan Admin Kemahasiswaan.</p>
-        <form onsubmit="event.preventDefault();doStaff()">
-          <div class="f">
-            <label>Nama pengguna (Username)</label>
-            <input id="su" placeholder="Masukkan username (petugas / admin)" autocomplete="off" required>
-          </div>
-          <div class="f">
-            <label>Kata sandi</label>
-            ${pw("sp")}
-          </div>
-          <button class="btn block">Masuk ke Panel Staf</button>
-        </form>
-
-
-
-        <p class="hint"><a href="#/masuk">&larr; Kembali ke login mahasiswa</a></p>
+    <div class="auth">
+      <div class="hero">
+        <div>
+          ${logo.replace("<div", "<div style='margin-bottom:48px'")}
+          <h1>Pendaftaran diterima.</h1>
+          <p>Akun Anda menunggu verifikasi Admin. Anda akan bisa masuk setelah Admin menyetujui foto KTM dan data NIM Anda.</p>
+        </div>
+        <ol class="steps">
+          <li><em>1</em><span><b>Admin memeriksa KTM</b>Pastikan NIM, nama, dan prodi sesuai kartu identitas.</span></li>
+          <li><em>2</em><span><b>Jika disetujui</b>Anda bisa masuk dengan NIM + kata sandi.</span></li>
+          <li><em>3</em><span><b>Jika ditolak</b>Alasan penolakan tampil saat Anda mencoba masuk.</span></li>
+        </ol>
+      </div>
+      <div class="pane">
+        <div class="box">
+          <div class="info-banner"><b>Pendaftaran berhasil dikirim.</b><br>Simpan NIM Anda. Coba masuk lagi setelah Admin melakukan verifikasi.</div>
+          <button class="btn block" onclick="ST.auth='login';render()">Kembali ke Masuk</button>
+          <p class="hint"><a href="#/">Kembali ke Beranda</a></p>
+        </div>
       </div>
     </div>
   `;
 }
 
-function doAuth() {
-  const nim = $("#nim").value.trim();
-  const p = $("#pw").value;
+async function doAuth(form) {
+  const idEl = $("#login_id");
+  const pwEl = $("#pw");
+  const id = idEl ? idEl.value.trim() : "";
+  const p = pwEl ? pwEl.value : "";
   if (ST.auth === "reg") {
     const n = $("#rn").value.trim();
-    const pr = $("#rp").value.trim();
-    if (!n || !nim || !pr || !p) return toast("Lengkapi semua data pendaftaran.");
-    if (DB.users.some((u) => u.nim === nim))
-      return toast("NIM sudah terdaftar. Silakan masuk.");
-    const u = { id: Date.now(), name: n, nim, prodi: pr, role: "user" };
-    DB.users.push(u);
-    saveDB();
-    ST.user = u;
-    toast("Akun mahasiswa berhasil dibuat.");
-    afterLoginCheck();
-    return;
+    const pr = $("#rp").value;
+    const p2 = $("#pw2").value;
+    const ktm = $("#ktm").files[0];
+    if (!n || !id || !pr || !p || !p2) return toast("Lengkapi semua data pendaftaran.");
+    if (!/^[0-9]{5,15}$/.test(id)) return toast("NIM harus berupa angka (5-15 digit).");
+    if (!PRODI_LIST.includes(pr)) return toast("Pilih program studi dari daftar resmi.");
+    if (p.length < 6) return toast("Kata sandi minimal 6 karakter.");
+    if (p !== p2) return toast("Konfirmasi kata sandi tidak sama.");
+    if (!ktm) return toast("Foto KTM wajib diunggah.");
+    if (!/^image\/(jpeg|png|webp)$/.test(ktm.type)) return toast("Foto KTM harus JPG, PNG, atau WEBP.");
+    if (ktm.size > 5 * 1024 * 1024) return toast("Foto KTM maksimal 5 MB.");
+    // Kirim multipart ke backend (bcrypt + status PENDING + audit).
+    try {
+      const fd = new FormData();
+      fd.append("name", n);
+      fd.append("nim", id);
+      fd.append("prodi", pr);
+      fd.append("password", p);
+      fd.append("confirm", p2);
+      fd.append("ktm", ktm);
+      await API.req("/api/auth/register", { method: "POST", form: fd });
+      ST.auth = "reg-success";
+      toast("Pendaftaran diterima. Menunggu verifikasi Admin.");
+      return render();
+    } catch (e) {
+      return toast(e.message);
+    }
   }
-  if (!nim || !p) return toast("Isi NIM dan kata sandi.");
-  const u = DB.users.find((x) => x.nim === nim && x.role === "user");
-  if (!u) return toast("NIM belum terdaftar. Silakan daftar terlebih dahulu.");
-  ST.user = u;
-  toast("Selamat datang, " + u.name);
-  afterLoginCheck();
+  if (!id || !p) return toast("Isi NIM/username dan kata sandi.");
+  // Login satu pintu via backend (bcrypt + JWT + cek ACTIVE).
+  try {
+    const r = await API.req("/api/auth/login", { method: "POST", body: { identifier: id, password: p } });
+    setSession(r.user, r.token);
+    ST.auth = "login";
+    return enterAppByRole(r.user);
+  } catch (e) {
+    return toast(e.message);
+  }
 }
 
-function doStaff() {
-  const u = $("#su").value.trim();
-  const p = $("#sp").value;
-  if (!u || !p) return toast("Isi username dan kata sandi.");
-  if (u === "petugas" && p === "petugas123") {
-    ST.user = DB.users.find((x) => x.role === "petugas") || DB.users[3];
-    ST.view = "dash_petugas";
-    toast("Masuk sebagai Petugas Kampus");
-    return render();
-  }
-  if (u === "admin" && p === "admin123") {
-    ST.user = DB.users.find((x) => x.role === "admin") || DB.users[4];
+// Klasifikasi peran dari data akun: admin -> Dashboard Admin,
+// petugas -> Dashboard Petugas, mahasiswa -> Forum (atau chat tertunda).
+function enterAppByRole(u) {
+  if (ST.pendingChat) return afterLoginCheck();
+  if (u.role === "admin") {
     ST.view = "dash";
     toast("Masuk sebagai Admin Kemahasiswaan");
     return render();
   }
-  toast("Username atau kata sandi staf salah.");
+  if (u.role === "petugas") {
+    ST.view = "dash_petugas";
+    toast("Masuk sebagai Petugas Kampus");
+    return render();
+  }
+  toast("Selamat datang, " + u.name);
+  return afterLoginCheck();
 }
 
 function afterLoginCheck() {
@@ -630,13 +683,14 @@ function afterLoginCheck() {
 }
 
 function logout() {
-  const role = ST.user ? ST.user.role : "";
   ST.user = null;
+  ST.token = null;
+  sessionStorage.removeItem("LF_TOKEN");
   ST.view = "";
   ST.chat = null;
   ST.chatReportId = null;
   ST.auth = "login";
-  location.hash = role === "admin" || role === "petugas" ? "#/staff" : "#/";
+  location.hash = "#/";
   render();
 }
 
@@ -668,14 +722,11 @@ function markRead() {
   if (!ST.user) return;
   const a = ST.user.role === "admin";
   const uid = a ? ST.chat : ST.user.id;
-  let changed = false;
+  if (!uid) return;
   DB.msgs.forEach((m) => {
-    if (m.uid === uid && m.from === (a ? "user" : "admin") && !m.read) {
-      m.read = true;
-      changed = true;
-    }
+    if (m.uid === uid && m.from === (a ? "user" : "admin") && !m.read) m.read = true;
   });
-  if (changed) saveDB();
+  API.req("/api/messages/read", { method: "PATCH", body: { user_id: uid } }).catch(() => {});
 }
 
 // Enhanced Chat: Start chat linked to uploaded item
@@ -711,59 +762,26 @@ function chatAbout(rid) {
   nav("pesan");
 }
 
-function sendM(f) {
+async function sendM(f) {
   const t = f.t.value.trim();
   if (!t) return;
   const a = ST.user.role === "admin";
-  const targetUid = a ? ST.chat : ST.user.id;
-  const currentRid = ST.chatReportId;
-  const currentItem = currentRid ? DB.reports.find((x) => x.id === currentRid) : null;
-
-  const newMsg = {
-    id: Date.now(),
-    uid: targetUid,
-    from: a ? "admin" : "user",
-    text: t,
-    at: new Date(),
-    read: false,
-    rid: currentRid || null,
-    rname: currentItem ? currentItem.name : null,
-  };
-
-  DB.msgs.push(newMsg);
-  saveDB();
-  f.t.value = "";
-
-  // Auto-respond simulation if user sent message to admin
-  if (!a && currentItem) {
-    simulateAdminReply(targetUid, currentItem);
+  if (a && !ST.chat) return toast("Pilih mahasiswa tujuan chat.");
+  try {
+    await API.req("/api/messages", {
+      method: "POST",
+      body: a
+        ? { user_id: ST.chat, message: t, report_id: ST.chatReportId || null }
+        : { message: t, report_id: ST.chatReportId || null },
+    });
+    f.t.value = "";
+    await refreshStore();
+  } catch (e) {
+    return toast(e.message);
   }
-
   app();
   const i = $(".cf textarea");
   if (i) i.focus();
-}
-
-function simulateAdminReply(uid, item) {
-  // If no admin reply exists yet in this thread, send realistic confirmation after 1.2s
-  setTimeout(() => {
-    const student = uobj(uid);
-    const reply = {
-      id: Date.now() + 1,
-      uid: uid,
-      from: "admin",
-      text: `Halo ${student.name || "Mahasiswa"}, pesan Anda mengenai barang "${item.name}" telah diterima oleh Petugas Kemahasiswaan. Kami akan memeriksa status pencocokan dan membalas pertanyaan Anda.`,
-      at: new Date(),
-      read: false,
-      rid: item.id,
-      rname: item.name,
-    };
-    DB.msgs.push(reply);
-    saveDB();
-    if (ST.user && ST.user.id === uid && ST.view === "pesan") {
-      app();
-    }
-  }, 1200);
 }
 
 function quickSend(txt) {
@@ -775,7 +793,7 @@ function quickSend(txt) {
   }
 }
 
-function app() {
+async function app() {
   const role = ST.user.role;
   const a = role === "admin";
   const p = role === "petugas";
@@ -799,11 +817,11 @@ function app() {
       ["Utama"],
       ["dash", "Dashboard"],
       ["pesan", "Pesan / Chat", unr],
-      ["Laporan Kehilangan"],
-      ["masuk", "Verifikasi Laporan", pendReports],
+      ["Laporan Barang Hilang"],
+      ["masuk", "Hilang Masuk — Verifikasi", pendReports],
       ["forum", "Forum Lost & Found"],
-      ["Barang Temuan"],
-      ["acc_temuan", "ACC Barang Temuan", pendFound],
+      ["Laporan Barang Ditemukan"],
+      ["acc_temuan", "Temuan Masuk — ACC", pendFound],
       ["input_admin", "Catat Temuan Langsung"],
       ["Pencocokan & Penyerahan"],
       ["cocok", "Pencocokan Barang"],
@@ -851,7 +869,7 @@ function app() {
               </button>`,
         ).join("")}
         <div class="me">
-          <b>${ST.user.name}</b>
+          <b>${esc(ST.user.name)}</b>
           ${a ? "Administrator Kemahasiswaan" : p ? "Petugas Keamanan / Kampus" : "NIM " + ST.user.nim}
           <br><button onclick="logout()">Keluar Akun</button>
         </div>
@@ -861,7 +879,7 @@ function app() {
   `;
 
   if (V[ST.view]) {
-    V[ST.view]();
+    await V[ST.view]();
   } else {
     V.forum();
   }
@@ -871,10 +889,10 @@ const head = (t, p, x = "") =>
   `<div class="head"><div><h1>${t}</h1><p>${p}</p></div>${x}</div>`;
 
 const sel = (k, arr, ph, lab) =>
-  `<select onchange="ST.${k}=this.value;V.forum()"><option value="">${ph}</option>${arr.map((o) => `<option value="${o}" ${ST[k] === o ? "selected" : ""}>${lab ? lab[o] : o}</option>`).join("")}</select>`;
+  `<select onchange="ST.${k}=this.value;refreshForum()"><option value="">${ph}</option>${arr.map((o) => `<option value="${o}" ${ST[k] === o ? "selected" : ""}>${lab ? lab[o] : o}</option>`).join("")}</select>`;
 
 const locFilter = () =>
-  `<select onchange="ST.fg=this.value;ST.fl='';V.forum()"><option value="">Semua gedung</option>${["Gedung A", "Gedung B"].map((g) => `<option value="${g}" ${ST.fg === g ? "selected" : ""}>${g}</option>`).join("")}</select><select ${ST.fg ? "" : "disabled"} onchange="ST.fl=this.value;V.forum()"><option value="">Semua lokasi</option>${LOCS.filter(
+  `<select onchange="ST.fg=this.value;ST.fl='';refreshForum()"><option value="">Semua gedung</option>${["Gedung A", "Gedung B"].map((g) => `<option value="${g}" ${ST.fg === g ? "selected" : ""}>${g}</option>`).join("")}</select><select ${ST.fg ? "" : "disabled"} onchange="ST.fl=this.value;refreshForum()"><option value="">Semua lokasi</option>${LOCS.filter(
     (x) => ST.fg && x.startsWith(ST.fg + " - "),
   )
     .map(
@@ -886,55 +904,64 @@ const locFilter = () =>
 const tbl = (cols, rows) =>
   `<div class="card tw"><table><thead><tr>${cols.map((c) => `<th>${c}</th>`).join("")}</tr></thead><tbody>${rows.length ? rows.join("") : `<tr><td colspan="${cols.length}" class="empty">Belum ada data.</td></tr>`}</tbody></table></div>`;
 
-const V = {
-  // 1. Forum Lost & Found
-  forum() {
-    const isLogged = !!ST.user;
-    const a = isLogged && ST.user.role === "admin";
+function refreshForum() {
+  const m = $("#main");
+  if (m) m.classList.add("no-enter");
+  V.forum();
+}
+function searchForum(value) {
+  ST.q = value;
+  clearTimeout(window.tm);
+  window.tm = setTimeout(() => {
+    const box = $("#forum-results");
+    if (!box) return;
+    $("#main").classList.add("no-enter");
+    box.innerHTML = forumResults();
+    const clr = $(".search-clear");
+    if (clr) clr.hidden = !ST.q;
+  }, 150);
+}
+function clearForumSearch() {
+  ST.q = "";
+  const input = $("#sq");
+  if (input) { input.value = ""; input.focus(); }
+  const box = $("#forum-results");
+  if (box) { $("#main").classList.add("no-enter"); box.innerHTML = forumResults(); }
+  const clr = $(".search-clear");
+  if (clr) clr.hidden = true;
+}
+function resetForumFilters() {
+  ST.q = ""; ST.fc = ""; ST.fg = ""; ST.fl = ""; ST.fs = "";
+  refreshForum();
+}
+
+// Hasil pencarian forum dipisah agar bisa diperbarui tanpa membangun ulang kolom pencarian.
+function forumResults() {
+    // Normalisasi agar pencarian tidak sensitif huruf besar/kecil dan spasi berlebih.
+    const query = String(ST.q || "").trim().toLocaleLowerCase("id-ID");
+    const matchesQuery = (item) => {
+      const haystack = [item.name, item.brand, item.desc, item.cat, item.loc, item.color]
+        .filter(Boolean).join(" ").toLocaleLowerCase("id-ID");
+      return !query || haystack.includes(query);
+    };
+    const matchesLocation = (item) =>
+      (!ST.fg || String(item.loc || "").startsWith(ST.fg + " - ")) &&
+      (!ST.fl || item.loc === ST.fl || String(item.loc || "").startsWith(ST.fl + " "));
 
     const filteredReports = DB.reports
-      .filter((r) =>
-        ST.fs
-          ? r.status === ST.fs
-          : r.status === "ACTIVE" || r.status === "FOUND",
-      )
-      .filter(
-        (r) =>
-          (r.name + r.brand + r.desc)
-            .toLowerCase()
-            .includes(ST.q.toLowerCase()) &&
-          (!ST.fc || r.cat === ST.fc) &&
-          (!ST.fg || r.loc.startsWith(ST.fg + " - ")) &&
-          (!ST.fl || r.loc === ST.fl || r.loc.startsWith(ST.fl + " ")),
-      );
+      .filter((r) => ST.fs ? r.status === ST.fs : r.status === "ACTIVE" || r.status === "FOUND")
+      .filter((r) => matchesQuery(r) && (!ST.fc || r.cat === ST.fc) && matchesLocation(r));
 
-    const approvedFound = DB.found.filter(
-      (f) =>
-        (f.status === "APPROVED" || f.status === "MATCHED") &&
-        (!ST.fc || f.cat === ST.fc) &&
-        (f.name + f.brand + f.desc).toLowerCase().includes(ST.q.toLowerCase()),
+    // Pencarian, kategori, gedung, dan lokasi juga berlaku pada barang temuan resmi.
+    const approvedFound = DB.found.filter((f) =>
+      (f.status === "APPROVED" || f.status === "MATCHED") &&
+      matchesQuery(f) && (!ST.fc || f.cat === ST.fc) && matchesLocation(f)
     );
 
-    $("#main").innerHTML =
-      head(
-        "Forum Lost & Found",
-        "Laporan barang hilang aktif (maks. 3 hari) dan barang temuan resmi yang diumumkan.",
-        !isLogged
-          ? `<button class='btn' onclick="goLogin('Masuk untuk melaporkan kehilangan')">Laporkan Barang Hilang</button>`
-          : ST.user.role === "user"
-            ? `<button class='btn' onclick="nav('lapor')">Buat Laporan Baru</button>`
-            : "",
-      ) +
-      `<div class="bar">
-        <input id="sq" placeholder="Cari nama barang, merk, atau ciri deskripsi..." value="${esc(ST.q)}" oninput="ST.q=this.value;clearTimeout(window.tm);window.tm=setTimeout(()=>{V.forum();const i=$('#sq');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},250)">
-        ${sel("fc", CATS, "Semua kategori")}
-        ${locFilter()}
-        ${sel("fs", a ? Object.keys(S) : ["ACTIVE", "FOUND"], "Semua status", S)}
-      </div>` +
-      `
+  return `
       <div style="margin-bottom:28px">
         <h3 class="t" style="display:flex;justify-content:space-between;align-items:center">
-          <span>📦 Laporan Barang Hilang Mahasiswa (${filteredReports.length})</span>
+          <span>Laporan Barang Hilang Mahasiswa (${filteredReports.length})</span>
           <span style="font-size:12px;color:var(--mute);font-weight:normal">Klik kartu untuk detail & chat admin</span>
         </h3>
         ${
@@ -944,7 +971,7 @@ const V = {
                   (r) => `
                 <div class="card item" onclick="detail(${r.id})">
                   <div class="ph">
-                    ${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : ic(IC.photo)}
+                    ${r.photo ? `<img src="${r.photo}" alt="${esc(r.name)}" loading="lazy">` : ic(IC.photo)}
                     ${badge(r.status)}
                   </div>
                   <div class="b">
@@ -953,8 +980,8 @@ const V = {
                     <div class="meta"><b>Lokasi:</b> ${esc(r.loc)}</div>
                     <div class="meta"><b>Hilang:</b> ${fmt(r.date)}</div>
                     <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-                      <span style="font-size:11.5px;color:var(--pri)">💬 Chat Admin</span>
-                      <span class="btn ghost sm" style="padding:2px 8px;font-size:11px">Detail &rarr;</span>
+                      <span style="font-size:11.5px;color:var(--pri)">Chat Admin</span>
+                      <span class="btn ghost sm detail-action" style="padding:2px 8px;font-size:11px">Detail &rarr;</span>
                     </div>
                   </div>
                 </div>
@@ -966,7 +993,7 @@ const V = {
       </div>
 
       <div style="margin-top:32px">
-        <h3 class="t">🛡️ Barang Temuan Resmi Tersimpan (${approvedFound.length})</h3>
+        <h3 class="t">Barang Temuan Resmi Tersimpan (${approvedFound.length})</h3>
         <p style="font-size:13px;color:var(--mute);margin:-6px 0 14px">Barang yang telah diserahkan mahasiswa penemu kepada Petugas / Admin dan telah disetujui untuk diumumkan.</p>
         ${
           approvedFound.length
@@ -975,7 +1002,7 @@ const V = {
                   (f) => `
                 <div class="card item" onclick="detailFound(${f.id})">
                   <div class="ph" style="background:var(--soft)">
-                    ${f.photo ? `<img src="${f.photo}" style="width:100%;height:100%;object-fit:cover">` : ic(IC.shield)}
+                    ${f.photo ? `<img src="${f.photo}" alt="${esc(f.name)}" loading="lazy">` : ic(IC.shield)}
                     ${badge(f.status)}
                   </div>
                   <div class="b">
@@ -983,7 +1010,7 @@ const V = {
                     <div class="meta"><b>Kategori:</b> ${esc(f.cat)}</div>
                     <div class="meta"><b>Ditemukan di:</b> ${esc(f.loc)}</div>
                     <div class="meta"><b>Penerima:</b> ${esc(f.received_by)}</div>
-                    <div style="margin-top:8px;font-size:11.5px;color:var(--ret)">✓ Tersimpan di Kemahasiswaan</div>
+                    <div style="margin-top:8px;font-size:11.5px;color:var(--ret)">Tersimpan di Kemahasiswaan</div>
                   </div>
                 </div>
               `,
@@ -993,6 +1020,35 @@ const V = {
         }
       </div>
       `;
+}
+
+const V = {
+  // 1. Forum Lost & Found
+  forum() {
+    const isLogged = !!ST.user;
+    const a = isLogged && ST.user.role === "admin";
+    $("#main").innerHTML =
+      head(
+        "Laporan & Barang Temuan Terbaru",
+        "Cari laporan barang hilang yang aktif atau lihat barang temuan resmi yang sudah diverifikasi.",
+        !isLogged
+          ? `<button class='btn' onclick="goLogin('Masuk untuk melaporkan kehilangan')">Laporkan Barang Hilang</button>`
+          : ST.user.role === "user"
+            ? `<button class='btn' onclick="nav('lapor')">Buat Laporan Baru</button>`
+            : "",
+      ) +
+      `<div class="bar forum-search-bar">
+        <div class="search-field-wrap">
+          <span class="search-field-icon" aria-hidden="true">⌕</span>
+          <input id="sq" type="search" aria-label="Cari barang" placeholder="Cari nama, merek, kategori, lokasi, atau deskripsi..." value="${esc(ST.q)}" oninput="searchForum(this.value)">
+          <button type="button" class="search-clear" onclick="clearForumSearch()" aria-label="Hapus pencarian" title="Hapus pencarian" ${ST.q ? "" : "hidden"}>×</button>
+        </div>
+        ${sel("fc", CATS, "Semua kategori")}
+        ${locFilter()}
+        ${sel("fs", a ? Object.keys(S) : ["ACTIVE", "FOUND"], "Semua status", S)}
+        <button type="button" class="btn ghost search-reset" onclick="resetForumFilters()">Reset filter</button>
+      </div>` +
+      `<div id="forum-results">${forumResults()}</div>`;
   },
 
   // 2. Mahasiswa: Buat Laporan Kehilangan
@@ -1004,7 +1060,7 @@ const V = {
       ) +
       `
       <div class="info-banner">
-        <b>💡 Catatan Penting:</b> Mahasiswa hanya dapat mengunggah <b>Laporan Barang Hilang</b>. Apabila Anda menemukan barang milik orang lain, harap serahkan langsung kepada <b>Petugas Satpam / Admin Kemahasiswaan</b> di kampus.
+        <b>Catatan Penting:</b> Mahasiswa hanya dapat mengunggah <b>Laporan Barang Hilang</b>. Apabila Anda menemukan barang milik orang lain, harap serahkan langsung kepada <b>Petugas Satpam / Admin Kemahasiswaan</b> di kampus.
       </div>
       <form class="card pad form" onsubmit="event.preventDefault();sendR(this)">
         <div class="f">
@@ -1082,8 +1138,8 @@ const V = {
               <td>${badge(r.status)}</td>
               <td>
                 <div class="act">
-                  <button class="btn ghost sm" onclick="detail(${r.id})">Detail</button>
-                  <button class="btn sm" onclick="chatAbout(${r.id})" title="Chat dengan admin mengenai laporan ini">💬 Chat Admin</button>
+                  <button class="btn ghost sm detail-action" onclick="detail(${r.id})">Detail</button>
+                  <button class="btn sm" onclick="chatAbout(${r.id})" title="Chat dengan admin mengenai laporan ini">Chat Admin</button>
                 </div>
               </td>
             </tr>`,
@@ -1123,7 +1179,7 @@ const V = {
                 <span>
                   <b>${esc(u.name)}</b>
                   <div class="meta">${esc(u.nim)} &bull; ${esc(u.prodi)}</div>
-                  ${relatedMsg ? `<div class="item-tag">🏷️ ${esc(relatedMsg.rname)}</div>` : ""}
+                  ${relatedMsg ? `<div class="item-tag">${esc(relatedMsg.rname)}</div>` : ""}
                   <div class="meta" style="font-size:12px;margin-top:2px">${l ? esc(l.text) : "Belum ada pesan"}</div>
                 </span>
                 ${n ? `<span class="cnt">${n}</span>` : ""}
@@ -1152,7 +1208,7 @@ const V = {
           </div>
         </div>
         <div class="chat-item-actions">
-          <button class="btn ghost sm" onclick="detail(${currentReport.id})">Lihat Detail Laporan</button>
+          <button class="btn ghost sm detail-action" onclick="detail(${currentReport.id})">Lihat Detail Laporan</button>
           <button class="btn ghost sm" style="color:var(--mute)" onclick="ST.chatReportId=null;app()" title="Lepas topik barang">&times; Lepas Topik</button>
         </div>
       </div>
@@ -1163,18 +1219,18 @@ const V = {
     const quickChips = a
       ? `
       <div class="quick-chips">
-        <span class="quick-chip" onclick="quickSend('Halo, laporan Anda sudah kami periksa dan saat ini aktif di forum.')">✓ Laporan diverifikasi</span>
-        <span class="quick-chip" onclick="quickSend('Barang temuan yang cocok sudah kami amankan di Kemahasiswaan. Silakan datang membawa KTM.')">🎉 Cocok, silakan ambil</span>
-        <span class="quick-chip" onclick="quickSend('Mohon sebutkan ciri khusus tambahan atau bukti kepemilikan untuk barang ini.')">❓ Minta ciri khusus</span>
-        <span class="quick-chip" onclick="quickSend('Petugas keamanan sedang memeriksa area penemuan terakhir.')">🔍 Sedang pencarian</span>
+        <span class="quick-chip" onclick="quickSend('Halo, laporan Anda sudah kami periksa dan saat ini aktif di forum.')">Laporan diverifikasi</span>
+        <span class="quick-chip" onclick="quickSend('Barang temuan yang cocok sudah kami amankan di Kemahasiswaan. Silakan datang membawa KTM.')">Cocok, silakan ambil</span>
+        <span class="quick-chip" onclick="quickSend('Mohon sebutkan ciri khusus tambahan atau bukti kepemilikan untuk barang ini.')">Minta ciri khusus</span>
+        <span class="quick-chip" onclick="quickSend('Petugas keamanan sedang memeriksa area penemuan terakhir.')">Sedang pencarian</span>
       </div>
     `
       : `
       <div class="quick-chips">
-        <span class="quick-chip" onclick="quickSend('Halo Admin, bagaimana perkembangan pencarian barang yang saya upload ini?')">📌 Status barang</span>
-        <span class="quick-chip" onclick="quickSend('Halo Admin, saya melihat barang dengan ciri mirip di forum, apakah itu barang saya?')">🔍 Tanya kecocokan</span>
-        <span class="quick-chip" onclick="quickSend('Halo Admin, saya ingin datang ke kantor untuk verifikasi kepemilikan barang.')">🏢 Jadwal verifikasi</span>
-        <span class="quick-chip" onclick="quickSend('Halo Admin, saya ingin menambahkan detail ciri khusus pada barang saya.')">📝 Tambah ciri khusus</span>
+        <span class="quick-chip" onclick="quickSend('Halo Admin, bagaimana perkembangan pencarian barang yang saya upload ini?')">Status barang</span>
+        <span class="quick-chip" onclick="quickSend('Halo Admin, saya melihat barang dengan ciri mirip di forum, apakah itu barang saya?')">Tanya kecocokan</span>
+        <span class="quick-chip" onclick="quickSend('Halo Admin, saya ingin datang ke kantor untuk verifikasi kepemilikan barang.')">Jadwal verifikasi</span>
+        <span class="quick-chip" onclick="quickSend('Halo Admin, saya ingin menambahkan detail ciri khusus pada barang saya.')">Tambah ciri khusus</span>
       </div>
     `;
 
@@ -1199,9 +1255,8 @@ const V = {
                   .map(
                     (m) => `
                 <div class="msg ${m.from === me ? "me" : ""}">
-                  ${m.rname ? `<div class="msg-item-tag">🏷️ Terkait: ${esc(m.rname)}</div>` : ""}
-                  ${esc(m.text)}
-                  <time>${fmtT(m.at)}</time>
+                  ${m.rname ? `<div class="msg-item-tag">Terkait: ${esc(m.rname)}</div>` : ""}
+                  <span class="msg-text">${esc(m.text)}</span><time>${fmtT(m.at)}</time>
                 </div>
               `,
                   )
@@ -1235,71 +1290,89 @@ const V = {
   dash() {
     const c = (k) => DB.reports.filter((r) => r.status === k).length;
     const pendFound = DB.found.filter((f) => f.status === "PENDING_APPROVAL").length;
+    const apprFound = DB.found.filter((f) => f.status === "APPROVED").length;
 
     $("#main").innerHTML =
-      head("Dashboard Administrator", "Ringkasan data laporan kehilangan dan barang temuan.") +
+      head("Dashboard Administrator", "Ringkasan data laporan kehilangan dan barang temuan. Dua jenis laporan dibedakan jelas: HILANG dari mahasiswa, TEMUAN dari petugas/penemu.") +
       `
+      <div class="info-banner">
+        <b>Cara baca dashboard:</b> <b>Laporan Barang Hilang Masuk</b> = laporan kehilangan dari mahasiswa yang menunggu persetujuan admin.
+        <b>Laporan Barang Ditemukan Masuk</b> = barang temuan dari petugas/penemu yang menunggu ACC admin sebelum tampil di forum.
+      </div>
       <div class="stats">
         <div class="card stat" style="--c:var(--pending)">
           <b>${c("PENDING")}</b>
-          <span>Laporan Masuk (Pending)</span>
-        </div>
-        <div class="card stat" style="--c:var(--active)">
-          <b>${c("ACTIVE")}</b>
-          <span>Aktif di Forum</span>
+          <span>Laporan Barang Hilang Masuk — Menunggu ACC</span>
+          <small class="meta">Dari mahasiswa, belum tayang di forum</small>
         </div>
         <div class="card stat" style="--c:var(--pending)">
           <b>${pendFound}</b>
-          <span>Temuan Perlu ACC</span>
+          <span>Laporan Barang Ditemukan Masuk — Menunggu ACC</span>
+          <small class="meta">Dari petugas/penemu, belum tayang di forum</small>
+        </div>
+        <div class="card stat" style="--c:var(--active)">
+          <b>${c("ACTIVE")}</b>
+          <span>Laporan Hilang Aktif di Forum</span>
+          <small class="meta">Sudah di-ACC, tampil maks. 3 hari</small>
+        </div>
+        <div class="card stat" style="--c:var(--active)">
+          <b>${apprFound}</b>
+          <span>Barang Temuan Resmi Tersimpan</span>
+          <small class="meta">Sudah di-ACC, siap dicocokkan</small>
         </div>
         <div class="card stat" style="--c:var(--found)">
           <b>${c("FOUND")}</b>
           <span>Cocok (Siap Ambil)</span>
+          <small class="meta">Hilang + temuan sudah dihubungkan</small>
         </div>
         <div class="card stat" style="--c:var(--ret)">
           <b>${c("RETURNED")}</b>
           <span>Sudah Dikembalikan</span>
+          <small class="meta">Selesai + terverifikasi pemilik</small>
         </div>
         <div class="card stat" style="--c:var(--exp)">
           <b>${c("EXPIRED")}</b>
-          <span>Kedaluwarsa (3 Hari)</span>
+          <span>Hilang Kedaluwarsa (3 Hari)</span>
+          <small class="meta">Aktif lebih dari 3 hari</small>
         </div>
       </div>
 
       <div class="two">
         <div>
-          <h3 class="t">Laporan Masuk Menunggu ACC</h3>
+          <h3 class="t">Laporan Barang Hilang Masuk — Menunggu ACC</h3>
+          <p style="font-size:12.5px;color:var(--mute);margin:-4px 0 10px">Dikirim mahasiswa via “Laporkan Kehilangan”. Setujui agar tayang di forum, atau tolak jika tidak valid.</p>
           ${tbl(
-            ["Barang", "Pelapor", "Tanggal", "Aksi"],
+            ["Barang Hilang", "Pelapor", "Tanggal Lapor", "Aksi"],
             DB.reports
               .filter((r) => r.status === "PENDING")
               .slice(0, 5)
               .map(
                 (r) => `
                 <tr>
-                  <td><b>${esc(r.name)}</b></td>
+                  <td><b>${esc(r.name)}</b><div class="meta">${esc(r.cat)} &bull; ${esc(r.loc)}</div></td>
                   <td>${esc(uname(r.uid))}</td>
                   <td>${fmt(r.date)}</td>
-                  <td><button class="btn ghost sm" onclick="detail(${r.id})">Periksa</button></td>
+                  <td><div class="act"><button class="btn ghost sm detail-action" onclick="detail(${r.id})">Periksa</button><button class="btn sm" onclick="nav('masuk')">Buka Verifikasi</button></div></td>
                 </tr>
               `,
               ),
           )}
         </div>
         <div>
-          <h3 class="t">Barang Temuan Masuk dari Petugas</h3>
+          <h3 class="t">Laporan Barang Ditemukan Masuk — Menunggu ACC</h3>
+          <p style="font-size:12.5px;color:var(--mute);margin:-4px 0 10px">Diserahkan penemu ke petugas/admin. ACC agar tampil di forum sebagai barang temuan resmi.</p>
           ${tbl(
-            ["Barang", "Lokasi", "Status", "Aksi"],
+            ["Barang Temuan", "Lokasi Temuan", "Diterima Oleh", "Aksi"],
             DB.found
               .filter((f) => f.status === "PENDING_APPROVAL")
               .slice(0, 5)
               .map(
                 (f) => `
                 <tr>
-                  <td><b>${esc(f.name)}</b></td>
+                  <td><b>${esc(f.name)}</b><div class="meta">${esc(f.cat)}</div></td>
                   <td>${esc(f.loc)}</td>
-                  <td>${badge(f.status)}</td>
-                  <td><button class="btn sm" onclick="accFoundItem(${f.id})">ACC</button></td>
+                  <td>${esc(f.received_by)}</td>
+                  <td><div class="act"><button class="btn ghost sm detail-action" onclick="detailFound(${f.id})">Periksa</button><button class="btn sm" onclick="accFoundItem(${f.id})">ACC</button></div></td>
                 </tr>
               `,
               ),
@@ -1309,13 +1382,13 @@ const V = {
     `;
   },
 
-  // 6. Admin: Verifikasi Laporan Masuk
+  // 6. Admin: Verifikasi Laporan Barang Hilang Masuk
   masuk() {
     const list = DB.reports.filter((r) => r.status === "PENDING");
     $("#main").innerHTML =
-      head("Verifikasi Laporan Masuk", "Periksa validitas laporan kehilangan sebelum tayang di forum (Maksimal 3 hari).") +
+      head("Laporan Barang Hilang Masuk — Verifikasi", "Laporan kehilangan yang dikirim mahasiswa. Periksa validitasnya sebelum disetujui tayang di forum (maksimal aktif 3 hari).") +
       tbl(
-        ["Barang", "Pelapor", "Lokasi", "Status", "Tindakan Admin"],
+        ["Barang Hilang", "Pelapor", "Lokasi Hilang", "Status", "Tindakan Admin"],
         list.map(
           (r) => `
           <tr>
@@ -1328,10 +1401,10 @@ const V = {
             <td>${badge(r.status)}</td>
             <td>
               <div class="act">
-                <button class="btn ghost sm" onclick="detail(${r.id})">Detail</button>
-                <button class="btn sm" onclick="setR(${r.id}, 'ACTIVE');toast('Laporan disetujui dan aktif di forum selama 3 hari');app()">Setujui (ACC)</button>
-                <button class="btn bad sm" onclick="setR(${r.id}, 'REJECTED');toast('Laporan ditolak');app()">Tolak</button>
-                <button class="btn ghost sm" onclick="chatAbout(${r.id})">💬 Chat</button>
+                <button class="btn ghost sm detail-action" onclick="detail(${r.id})">Detail</button>
+                <button class="btn sm" onclick="setR(${r.id}, 'ACTIVE');toast('Laporan barang hilang disetujui dan aktif di forum selama 3 hari');app()">Setujui (ACC)</button>
+                <button class="btn bad sm" onclick="setR(${r.id}, 'REJECTED');toast('Laporan barang hilang ditolak');app()">Tolak</button>
+                <button class="btn ghost sm" onclick="chatAbout(${r.id})">Chat</button>
               </div>
             </td>
           </tr>
@@ -1340,13 +1413,13 @@ const V = {
       );
   },
 
-  // 7. Admin: Verifikasi / ACC Barang Temuan dari Petugas
+  // 7. Admin: Verifikasi / ACC Laporan Barang Ditemukan Masuk
   acc_temuan() {
     const list = DB.found.filter((f) => f.status === "PENDING_APPROVAL");
     $("#main").innerHTML =
-      head("Verifikasi Barang Temuan (ACC)", "Barang temuan yang diserahkan penemu ke Petugas harus di-ACC Admin sebelum tampil di forum.") +
+      head("Laporan Barang Ditemukan Masuk — ACC", "Barang temuan yang diserahkan penemu ke petugas/admin. ACC agar tampil di forum sebagai barang temuan resmi.") +
       tbl(
-        ["Barang", "Kategori", "Lokasi", "Petugas Penerima", "Tanggal", "Aksi"],
+        ["Barang Temuan", "Kategori", "Lokasi Temuan", "Diterima Oleh", "Tanggal Diterima", "Tindakan Admin"],
         list.map(
           (f) => `
           <tr>
@@ -1360,7 +1433,7 @@ const V = {
             <td>${fmt(f.date)}</td>
             <td>
               <div class="act">
-                <button class="btn ghost sm" onclick="detailFound(${f.id})">Detail</button>
+                <button class="btn ghost sm detail-action" onclick="detailFound(${f.id})">Detail</button>
                 <button class="btn sm" onclick="accFoundItem(${f.id})">Setujui (ACC)</button>
                 <button class="btn bad sm" onclick="rejectFoundItem(${f.id})">Tolak</button>
               </div>
@@ -1520,7 +1593,7 @@ const V = {
               <div class="meta">${esc(r.cat)} &bull; ${esc(r.loc)}</div>
             </td>
             <td>
-              <button class="btn ghost sm" onclick="chatAbout(${r.id})">💬 Hubungi Pelapor</button>
+              <button class="btn ghost sm" onclick="chatAbout(${r.id})">Hubungi Pelapor</button>
             </td>
             <td>
               <button class="btn sm" onclick="verif(${r.id})">Verifikasi & Serahkan</button>
@@ -1531,31 +1604,103 @@ const V = {
       );
   },
 
-  // 11. Admin: Data Mahasiswa
-  users() {
-    const list = DB.users.filter((u) => u.role === "user");
+  // 11. Admin: Data Mahasiswa + Verifikasi Regist KTM (Cara B) via API
+  async users() {
+    $("#main").innerHTML = head("Data Mahasiswa + Verifikasi Regist", "Memuat data mahasiswa dari server…");
+    try {
+      const [p, a, rj] = await Promise.all([
+        API.req('/api/users?role=user&status=PENDING').catch(() => ({ data: [] })),
+        API.req('/api/users?role=user&status=ACTIVE').catch(() => ({ data: [] })),
+        API.req('/api/users?role=user&status=REJECTED').catch(() => ({ data: [] })),
+      ]);
+      DB.users = [...(p.data || []), ...(a.data || []), ...(rj.data || [])];
+    } catch (e) {
+      $("#main").innerHTML = head("Data Mahasiswa + Verifikasi Regist", "Gagal memuat: " + e.message);
+      return;
+    }
+    const tab = ST.userTab || "pending";
+    const pending = DB.users.filter((u) => u.role === "user" && u.verification_status === "PENDING");
+    const active = DB.users.filter((u) => u.role === "user" && u.verification_status === "ACTIVE");
+    const rejected = DB.users.filter((u) => u.role === "user" && u.verification_status === "REJECTED");
+    // KTM: base64 langsung dari DB, atau path lama -> endpoint /uploads/ktm/<file>?token=...
+    // (img/link tidak bisa kirim header Authorization, jadi token lewat query)
+    const ktmSrc = (u) => {
+      if (!u.ktm_photo) return "";
+      if (/^data:image\//.test(u.ktm_photo)) return u.ktm_photo;
+      if (/^(blob:|https?:)/.test(u.ktm_photo)) return u.ktm_photo;
+      const file = String(u.ktm_photo).split("/").pop();
+      return `/uploads/ktm/${encodeURIComponent(file)}?token=${encodeURIComponent(ST.token || "")}`;
+    };
+    const ktmCell = (u) =>
+      u.ktm_photo
+        ? `<a href="${ktmSrc(u)}" target="_blank" rel="noopener"><img src="${ktmSrc(u)}" alt="KTM ${esc(u.name)}" style="width:72px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--line)" onerror="this.outerHTML='<span class=meta>Foto rusak</span>'"></a>`
+        : `<span class="meta">Tanpa KTM</span>`;
+
+    const pendingTbl = tbl(
+      ["Mahasiswa + KTM", "NIM", "Program Studi", "Tindakan Admin"],
+      pending.map(
+        (u) => `
+        <tr>
+          <td><div style="display:flex;gap:10px;align-items:center">${ktmCell(u)}<div><b>${esc(u.name)}</b><div class="meta">Daftar: ${u.created_at ? fmt(u.created_at) : "-"}</div></div></div></td>
+          <td>${esc(u.nim)}</td>
+          <td>${esc(u.prodi)}</td>
+          <td><div class="act">
+            <button class="btn ghost sm detail-action" onclick="detailKtm(${u.id})">Lihat KTM</button>
+            <button class="btn sm" onclick="verifyReg(${u.id}, true)">Setujui</button>
+            <button class="btn bad sm" onclick="verifyReg(${u.id}, false)">Tolak</button>
+          </div></td>
+        </tr>`,
+      ),
+    );
+    const activeTbl = tbl(
+      ["Nama Lengkap", "NIM", "Program Studi", "Total Laporan", "Aksi"],
+      active.map(
+        (u) => `
+        <tr>
+          <td><b>${esc(u.name)}</b></td>
+          <td>${esc(u.nim)}</td>
+          <td>${esc(u.prodi)}</td>
+          <td>${DB.reports.filter((r) => r.uid === u.id).length} laporan</td>
+          <td><button class="btn ghost sm" onclick="ST.chat=${u.id};ST.chatReportId=null;nav('pesan')">Chat Mahasiswa</button></td>
+        </tr>`,
+      ),
+    );
+    const rejectedTbl = tbl(
+      ["Nama", "NIM", "Alasan Ditolak", "Aksi"],
+      rejected.map(
+        (u) => `
+        <tr>
+          <td><b>${esc(u.name)}</b><div class="meta">${esc(u.prodi)}</div></td>
+          <td>${esc(u.nim)}</td>
+          <td>${esc(u.rejected_reason || "-")}</td>
+          <td><button class="btn sm" onclick="verifyReg(${u.id}, true)">Setujui</button></td>
+        </tr>`,
+      ),
+    );
+
     $("#main").innerHTML =
-      head("Data Mahasiswa Terdaftar", "Daftar akun mahasiswa dalam sistem Lost & Found.") +
-      tbl(
-        ["Nama Lengkap", "NIM", "Program Studi", "Total Laporan", "Aksi"],
-        list.map(
-          (u) => `
-          <tr>
-            <td><b>${esc(u.name)}</b></td>
-            <td>${esc(u.nim)}</td>
-            <td>${esc(u.prodi)}</td>
-            <td>${DB.reports.filter((r) => r.uid === u.id).length} laporan</td>
-            <td>
-              <button class="btn ghost sm" onclick="ST.chat=${u.id};ST.chatReportId=null;nav('pesan')">💬 Chat Mahasiswa</button>
-            </td>
-          </tr>
-        `,
-        ),
-      );
+      head(
+        "Data Mahasiswa + Verifikasi Regist",
+        "Pendaftar baru wajib upload KTM. Setujui agar bisa masuk, atau tolak dengan alasan.",
+      ) +
+      `<div class="tabs" style="max-width:560px;margin-bottom:18px">
+        <button class="${tab === "pending" ? "on" : ""}" onclick="ST.userTab='pending';app()">Perlu Verifikasi (${pending.length})</button>
+        <button class="${tab === "active" ? "on" : ""}" onclick="ST.userTab='active';app()">Aktif (${active.length})</button>
+        <button class="${tab === "rejected" ? "on" : ""}" onclick="ST.userTab='rejected';app()">Ditolak (${rejected.length})</button>
+      </div>` +
+      (tab === "pending" ? pendingTbl : tab === "rejected" ? rejectedTbl : activeTbl);
   },
 
-  // 12. Admin: Data Petugas
-  petugas_data() {
+  // 12. Admin: Data Petugas via API
+  async petugas_data() {
+    $("#main").innerHTML = head("Data Petugas Kampus", "Memuat…");
+    try {
+      const r = await API.req('/api/users?role=petugas');
+      DB.users = [...DB.users.filter((u) => u.role !== "petugas"), ...(r.data || [])];
+    } catch (e) {
+      $("#main").innerHTML = head("Data Petugas Kampus", "Gagal memuat: " + e.message);
+      return;
+    }
     const list = DB.users.filter((u) => u.role === "petugas");
     $("#main").innerHTML =
       head("Data Petugas Kampus", "Petugas yang berwenang menerima barang temuan di lapangan.") +
@@ -1593,7 +1738,7 @@ const V = {
             <td>${fmt(r.date)}</td>
             <td>${badge(r.status)}</td>
             <td>
-              <button class="btn ghost sm" onclick="detail(${r.id})">Detail</button>
+              <button class="btn ghost sm detail-action" onclick="detail(${r.id})">Detail</button>
             </td>
           </tr>
         `,
@@ -1601,9 +1746,9 @@ const V = {
       );
   },
 
-  // 14. Petugas: Dashboard Petugas
+  // 14. Petugas: Dashboard Petugas (milik sendiri via received_by_id)
   dash_petugas() {
-    const myFound = DB.found.filter((f) => f.received_by.includes(ST.user.name));
+    const myFound = DB.found.filter((f) => f.received_by_id === ST.user.id || String(f.received_by || "").includes(ST.user.name));
     const pend = myFound.filter((f) => f.status === "PENDING_APPROVAL").length;
     const apprv = myFound.filter((f) => f.status === "APPROVED" || f.status === "MATCHED").length;
 
@@ -1643,7 +1788,7 @@ const V = {
             <td>${esc(f.loc)}</td>
             <td>${fmt(f.date)}</td>
             <td>${badge(f.status)}</td>
-            <td><button class="btn ghost sm" onclick="detailFound(${f.id})">Detail</button></td>
+            <td><button class="btn ghost sm detail-action" onclick="detailFound(${f.id})">Detail</button></td>
           </tr>
         `,
         ),
@@ -1707,9 +1852,9 @@ const V = {
     `;
   },
 
-  // 16. Petugas: Riwayat Barang Diterima
+  // 16. Petugas: Riwayat Barang Diterima (milik sendiri)
   riwayat_petugas() {
-    const list = DB.found.filter((f) => f.received_by.includes(ST.user.name));
+    const list = DB.found.filter((f) => f.received_by_id === ST.user.id || String(f.received_by || "").includes(ST.user.name));
     $("#main").innerHTML =
       head("Riwayat Barang Diterima", "Seluruh barang temuan yang pernah Anda terima.") +
       tbl(
@@ -1722,7 +1867,7 @@ const V = {
             <td>${esc(f.loc)}</td>
             <td>${fmt(f.date)}</td>
             <td>${badge(f.status)}</td>
-            <td><button class="btn ghost sm" onclick="detailFound(${f.id})">Detail</button></td>
+            <td><button class="btn ghost sm detail-action" onclick="detailFound(${f.id})">Detail</button></td>
           </tr>
         `,
         ),
@@ -1744,7 +1889,6 @@ const V = {
         </dl>
         <div style="margin-top:24px;display:flex;gap:10px">
           <button class="btn bad sm" onclick="logout()">Keluar Akun</button>
-          <button class="btn ghost sm" onclick="resetDB()">Reset Demo Data</button>
         </div>
       </div>
     `;
@@ -1766,169 +1910,231 @@ function previewImg(input, targetSelector) {
   }
 }
 
-function sendR(f) {
-  const photoEl = f.foto && f.foto.files[0];
-  const saveReport = (photoData) => {
-    DB.reports.unshift({
-      id: Date.now(),
-      uid: ST.user.id,
-      name: f.n.value.trim(),
-      cat: f.c.value,
-      color: f.w.value.trim(),
-      brand: f.b ? f.b.value.trim() : "",
-      loc: locOf(f),
-      date: new Date(f.d.value),
-      desc: f.ds.value.trim(),
-      photo: photoData || "",
-      status: "PENDING",
-      appr: null,
-      created_at: new Date(),
+// Kirim laporan kehilangan via API (foto base64 kecil). Tanpa localStorage.
+async function sendR(f) {
+  const btn = f.querySelector("button.btn");
+  if (btn) btn.disabled = true;
+  try {
+    const photoEl = f.foto && f.foto.files[0];
+    const photoData = photoEl ? await readImageSmall(photoEl, 800, "Foto barang").catch((e) => { toast(e.message); return null; }) : "";
+    if (photoEl && !photoData) return;
+    const catName = f.c.value;
+    const catIdx = CATS.indexOf(catName);
+    if (catIdx < 0) return toast("Kategori tidak dikenal.");
+    const fullLoc = locOf(f);
+    const building = fullLoc.startsWith("Gedung B") ? "Gedung B" : "Gedung A";
+    await API.req("/api/reports", {
+      method: "POST",
+      body: {
+        category_id: catIdx + 1,
+        item_name: f.n.value.trim(),
+        color: f.w.value.trim(),
+        brand: f.b ? f.b.value.trim() : "",
+        building,
+        lost_location: fullLoc,
+        classroom_number: (f.kn && f.kn.value.trim()) || null,
+        lost_date: f.d.value,
+        description: f.ds.value.trim(),
+        photo: photoData,
+      },
     });
-    saveDB();
     toast("Laporan terkirim! Menunggu verifikasi Admin.");
     nav("saya");
-  };
-
-  if (photoEl) {
-    const reader = new FileReader();
-    reader.onload = (e) => saveReport(e.target.result);
-    reader.readAsDataURL(photoEl);
-  } else {
-    saveReport("");
+  } catch (e) {
+    toast(e.message);
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
-function submitFoundPetugas(f) {
-  const photoEl = f.foto && f.foto.files[0];
-  const saveFound = (photoData) => {
-    DB.found.unshift({
-      id: Date.now(),
-      name: f.n.value.trim(),
-      cat: f.c.value,
-      color: f.w ? f.w.value.trim() : "",
-      brand: f.b ? f.b.value.trim() : "",
-      loc: locOf(f),
-      date: new Date(NOW),
-      desc: f.ds ? f.ds.value.trim() : "",
-      photo: photoData || "",
-      status: "PENDING_APPROVAL",
-      received_by: `Petugas - ${ST.user.name}`,
+// Catat temuan petugas via API (PENDING_APPROVAL). Tanpa localStorage.
+async function submitFoundPetugas(f) {
+  const btn = f.querySelector("button.btn");
+  if (btn) btn.disabled = true;
+  try {
+    const photoEl = f.foto && f.foto.files[0];
+    const photoData = photoEl ? await readImageSmall(photoEl, 800, "Foto temuan").catch((e) => { toast(e.message); return null; }) : "";
+    if (photoEl && !photoData) return;
+    const catIdx = CATS.indexOf(f.c.value);
+    if (catIdx < 0) return toast("Kategori tidak dikenal.");
+    const fullLoc = locOf(f);
+    await API.req("/api/found", {
+      method: "POST",
+      body: {
+        category_id: catIdx + 1,
+        item_name: f.n.value.trim(),
+        color: f.w ? f.w.value.trim() : "",
+        brand: f.b ? f.b.value.trim() : "",
+        building: fullLoc.startsWith("Gedung B") ? "Gedung B" : "Gedung A",
+        found_location: fullLoc,
+        classroom_number: (f.kn && f.kn.value.trim()) || null,
+        found_date: new Date().toISOString().slice(0, 10),
+        description: f.ds ? f.ds.value.trim() : "",
+        photo: photoData,
+      },
     });
-    saveDB();
     toast("Barang temuan dicatat! Menunggu verifikasi ACC Admin.");
     nav("riwayat_petugas");
-  };
-
-  if (photoEl) {
-    const reader = new FileReader();
-    reader.onload = (e) => saveFound(e.target.result);
-    reader.readAsDataURL(photoEl);
-  } else {
-    saveFound("");
+  } catch (e) {
+    toast(e.message);
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
-function submitFoundDirect(f) {
-  const photoEl = f.foto && f.foto.files[0];
-  const saveFound = (photoData) => {
-    DB.found.unshift({
-      id: Date.now(),
-      name: f.n.value.trim(),
-      cat: f.c.value,
-      color: f.w ? f.w.value.trim() : "",
-      brand: f.b ? f.b.value.trim() : "",
-      loc: locOf(f),
-      date: new Date(NOW),
-      desc: f.ds ? f.ds.value.trim() : "",
-      photo: photoData || "",
-      status: "APPROVED",
-      received_by: "Admin Kemahasiswaan",
+// Catat temuan langsung admin via API (langsung APPROVED). Tanpa localStorage.
+async function submitFoundDirect(f) {
+  const btn = f.querySelector("button.btn");
+  if (btn) btn.disabled = true;
+  try {
+    const photoEl = f.foto && f.foto.files[0];
+    const photoData = photoEl ? await readImageSmall(photoEl, 800, "Foto temuan").catch((e) => { toast(e.message); return null; }) : "";
+    if (photoEl && !photoData) return;
+    const catIdx = CATS.indexOf(f.c.value);
+    if (catIdx < 0) return toast("Kategori tidak dikenal.");
+    const fullLoc = locOf(f);
+    await API.req("/api/found", {
+      method: "POST",
+      body: {
+        category_id: catIdx + 1,
+        item_name: f.n.value.trim(),
+        color: f.w ? f.w.value.trim() : "",
+        brand: f.b ? f.b.value.trim() : "",
+        building: fullLoc.startsWith("Gedung B") ? "Gedung B" : "Gedung A",
+        found_location: fullLoc,
+        classroom_number: (f.kn && f.kn.value.trim()) || null,
+        found_date: new Date().toISOString().slice(0, 10),
+        description: f.ds ? f.ds.value.trim() : "",
+        photo: photoData,
+      },
     });
-    saveDB();
     toast("Barang temuan berhasil dicatat dan langsung APPROVED.");
     nav("cocok");
-  };
-
-  if (photoEl) {
-    const reader = new FileReader();
-    reader.onload = (e) => saveFound(e.target.result);
-    reader.readAsDataURL(photoEl);
-  } else {
-    saveFound("");
+  } catch (e) {
+    toast(e.message);
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
-function accFoundItem(id) {
-  const f = DB.found.find((x) => x.id === id);
-  if (f) {
-    f.status = "APPROVED";
-    saveDB();
-    toast("Barang temuan disetujui (ACC) dan siap dicocokkan.");
-    app();
+async function accFoundItem(id) {
+  try {
+    const r = await API.req(`/api/found/${id}/approve`, { method: "PATCH", body: { approve: true } });
+    toast(r.message || "Barang temuan disetujui (ACC) dan siap dicocokkan.");
+    await refreshStore();
+  } catch (e) {
+    toast(e.message);
   }
+  app();
 }
 
-function rejectFoundItem(id) {
-  const f = DB.found.find((x) => x.id === id);
-  if (f) {
-    f.status = "REJECTED";
-    saveDB();
-    toast("Barang temuan ditolak.");
-    app();
+async function rejectFoundItem(id) {
+  try {
+    const r = await API.req(`/api/found/${id}/approve`, { method: "PATCH", body: { approve: false } });
+    toast(r.message || "Barang temuan ditolak.");
+    await refreshStore();
+  } catch (e) {
+    toast(e.message);
   }
+  app();
+}
+
+// Verifikasi regist mahasiswa Cara B (upload KTM + ACC manual admin) via API.
+async function verifyReg(id, approve) {
+  const u = DB.users.find((x) => x.id === id && x.role === "user");
+  if (!u && approve !== false) {
+    // Tetap lanjut via API walau cache kosong.
+  }
+  if (!approve) {
+    const label = u ? `${u.name} (${u.nim})` : `ID ${id}`;
+    const reason = prompt(`Tolak pendaftaran ${label}?\nTulis alasan penolakan:`);
+    if (reason === null) return;
+    if (!reason.trim()) return toast("Alasan penolakan wajib diisi.");
+    try {
+      const r = await API.req("/api/auth/verify-registration", { method: "POST", body: { user_id: id, approve: false, reason: reason.trim() } });
+      toast(r.message || "Pendaftaran ditolak dengan alasan.");
+      await refreshStore();
+    } catch (e) {
+      return toast(e.message);
+    }
+    return app();
+  }
+  const label = u ? `${u.name} (${u.nim}, ${u.prodi})` : `ID ${id}`;
+  if (!confirm(`Setujui pendaftaran ${label}?`)) return;
+  try {
+    const r = await API.req("/api/auth/verify-registration", { method: "POST", body: { user_id: id, approve: true } });
+    toast(r.message || "Pendaftaran disetujui. Mahasiswa bisa masuk.");
+    await refreshStore();
+  } catch (e) {
+    return toast(e.message);
+  }
+  app();
+}
+
+function detailKtm(id) {
+  const u = DB.users.find((x) => x.id === id && x.role === "user");
+  if (!u) return;
+  // KTM: base64 dari DB, atau path lama -> endpoint ber-token
+  const src = u.ktm_photo
+    ? /^data:image\//.test(u.ktm_photo)
+      ? u.ktm_photo
+      : /^(blob:|https?:)/.test(u.ktm_photo)
+        ? u.ktm_photo
+        : `/uploads/ktm/${encodeURIComponent(String(u.ktm_photo).split("/").pop())}?token=${encodeURIComponent(ST.token || "")}`
+    : "";
+  dlg(`
+    <div class="modal-head">
+      <h2>Verifikasi KTM</h2>
+      <p class="meta">${esc(u.name)} &bull; NIM ${esc(u.nim)} &bull; ${esc(u.prodi)}</p>
+    </div>
+    ${src ? `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="KTM ${esc(u.name)}" style="display:block;width:100%;max-height:380px;object-fit:contain;background:var(--soft);border-radius:8px;border:1px solid var(--line)"></a>` : `<div class="card empty">Tidak ada foto KTM.</div>`}
+    <div class="foot">
+      <button class="btn ghost" onclick="$('dialog').close()">Tutup</button>
+      ${u.verification_status === "PENDING" ? `<button class="btn bad" onclick="$('dialog').close();verifyReg(${u.id}, false)">Tolak</button><button class="btn" onclick="$('dialog').close();verifyReg(${u.id}, true)">Setujui</button>` : ""}
+    </div>
+  `);
 }
 const canDelete = () =>
   ST.user && (ST.user.role === "admin" );
 
 const canDeleteFound = (f) =>
   ST.user &&
-(ST.user.role === "admin" || (ST.user.role === "petugas" && f.received_by.includes(ST.user.name)));
+  (ST.user.role === "admin" || (ST.user.role === "petugas" && (f.received_by_id === ST.user.id || String(f.received_by || "").includes(ST.user.name))));
 
 function closeDlg(){
   const e = $("dialog");
   if (e && e.open) e.close();
 }
 
-function deleteReport(id){
+async function deleteReport(id){
   if (!canDelete()) return toast("Anda tidak memiliki izin untuk menghapus Laporan.");
   const r = DB.reports.find((x) => x.id === id);
-  if (!r) return;
-  if (!confirm(`Hapus Laporan "${r.name}" secara permanen?\nTindakan ini dapat dibatalkan.`)) return;
-  DB.matches 
-   .filter((m) => m.lost_report_id === id)
-   .forEach((m) => {
-    const f = DB.found.find((x) => x.id === m.found_item_id);
-    if (f && f.status === "MATCHED") f.status = "APPROVED";
-  });
-  DB.matches = DB.matches.filter((m) => m.lost_report_id !== id);
-  DB.returns = DB.returns.filter((x) => x.lost_report_id !== id);
-  DB.reports = DB.reports.filter((x) => x.id !== id);
-  DB.msgs.forEach((m) => {
-    if (m.rid === id) m.rid = null;
-  });
-  if (ST.chatReportId === id) ST.chatReportId = null;
-  saveDB();
+  if (!confirm(`Hapus Laporan "${r ? r.name : id}" secara permanen?\nTindakan ini dicatat di audit log.`)) return;
+  try {
+    const res = await API.req(`/api/reports/${id}`, { method: "DELETE" });
+    toast(res.message || "Laporan Kehilangan berhasil dihapus");
+    if (ST.chatReportId === id) ST.chatReportId = null;
+    await refreshStore();
+  } catch (e) {
+    return toast(e.message);
+  }
   closeDlg();
-  toast("Laporan Kehilangan berhasil dihapus");
   render();
 }
 
-function deleteFound(id){
+async function deleteFound(id){
   const f = DB.found.find((x) => x.id === id);
   if (!f) return;
   if (!canDeleteFound(f)) return toast("Anda tidak memiliki izin untuk menghapus barang temuan ini.");
-  if (!confirm(`Hapus barang temuan "${f.name}" secara permanen?\nTindakan ini dapat dibatalkan`)) return;
-  DB.matches
-    .filter((m) => m.found_item_id === id)
-    .forEach ((m) => {
-      const r = DB.reports.find((x) => x.id === m.lost_report_id);
-      if (r && r.status === "FOUND") r.status = "ACTIVE";
-    });
-  DB.matches = DB.matches.filter((m) => m.found_item_id !== id);
-  DB.found = DB.found.filter((x) => x.id !== id);
-  saveDB();
+  if (!confirm(`Hapus barang temuan "${f.name}" secara permanen?\nTindakan ini dicatat di audit log.`)) return;
+  try {
+    const res = await API.req(`/api/found/${id}`, { method: "DELETE" });
+    toast(res.message || "Barang temuan berhasil dihapus");
+    await refreshStore();
+  } catch (e) {
+    return toast(e.message);
+  }
   closeDlg();
-  toast("Barang temuan berhasil dihapus");
   render();
 }
 
@@ -1938,20 +2144,14 @@ function doMatch(f) {
   directMatch(r, i);
 }
 
-function directMatch(rid, fid) {
-  setR(rid, "FOUND");
-  const f = DB.found.find((x) => x.id === fid);
-  if (f) f.status = "MATCHED";
-
-  DB.matches.push({
-    id: Date.now(),
-    lost_report_id: rid,
-    found_item_id: fid,
-    matched_by: ST.user.name,
-    matched_at: new Date(),
-  });
-  saveDB();
-  toast("Laporan dan temuan berhasil dihubungkan! Silakan hubungi pelapor.");
+async function directMatch(rid, fid) {
+  try {
+    const res = await API.req("/api/matches", { method: "POST", body: { lost_report_id: rid, found_item_id: fid } });
+    toast(res.message || "Laporan dan temuan berhasil dihubungkan! Silakan hubungi pelapor.");
+    await refreshStore();
+  } catch (e) {
+    return toast(e.message);
+  }
   app();
 }
 
@@ -1962,14 +2162,29 @@ function dlg(h) {
     "beforeend",
     `<dialog><div class="in">${h}</div></dialog>`,
   );
-  $("dialog").showModal();
+  const d = $("dialog");
+  // Klik area gelap (backdrop) = tutup, supaya modal tidak nyangkut.
+  d.addEventListener("click", (ev) => {
+    if (ev.target === d) d.close();
+  });
+  d.showModal();
 }
 
-// Data diri & foto pengambil barang (hanya tampil untuk Admin)
-function takerInfo(reportId) {
-  const t = (DB.returns || []).find((x) => x.lost_report_id === reportId && x.taker_photo);
-  if (!t) return "";
-  return `
+// Paksa tutup semua modal (dipakai saat pindah halaman agar tidak nyangkut).
+function closeAllDlg() {
+  document.querySelectorAll("dialog").forEach((d) => {
+    try { if (d.open) d.close(); } catch (_) {}
+    d.remove();
+  });
+}
+
+// Data diri & foto pengambil barang dari API (hanya tampil untuk Admin)
+async function takerInfoHtml(reportId) {
+  try {
+    const r = await API.req(`/api/returns?lost_report_id=${reportId}`);
+    const t = (r.data || [])[0];
+    if (!t) return "";
+    return `
     <h3 class="t" style="margin:16px 0 8px">Data Pengambil Barang</h3>
     <dl class="dl">
       <dt>Nama</dt><dd>${esc(t.taker_name)}</dd>
@@ -1991,23 +2206,28 @@ function takerInfo(reportId) {
       </figure>`,
       )
       .join("")}`;
+  } catch (_) {
+    return "";
+  }
 }
 
 // Modal Detail Laporan Kehilangan
-function detail(id) {
+async function detail(id) {
   const r = DB.reports.find((x) => x.id === id);
   if (!r) return;
   const isAdm = ST.user && ST.user.role === "admin";
-  const isMine = ST.user && ST.user.id === r.uid;
   const expireDate = exp(r);
+  const takerHtml = isAdm ? await takerInfoHtml(r.id) : "";
 
   dlg(`
-    <div class="ph" style="border-radius:8px;margin-bottom:16px;height:160px;overflow:hidden">
-      ${r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:contain">` : ic(IC.photo)}
+    <div class="ph modal-photo">
+      ${r.photo ? `<img src="${r.photo}" alt="${esc(r.name)}">` : ic(IC.photo)}
     </div>
-    ${badge(r.status)}
-    <h2 style="margin-top:8px">${esc(r.name)}</h2>
-    <p class="meta" style="margin:0 0 16px">${esc(r.cat)}</p>
+    <div class="modal-head">
+      ${badge(r.status)}
+      <h2>${esc(r.name)}</h2>
+      <p class="meta">${esc(r.cat)}</p>
+    </div>
     <dl class="dl">
       <dt>Warna</dt><dd>${esc(r.color || "-")}</dd>
       <dt>Merk</dt><dd>${esc(r.brand || "-")}</dd>
@@ -2017,12 +2237,12 @@ function detail(id) {
       ${isAdm ? `<dt>Pelapor</dt><dd>${esc(uname(r.uid))}</dd>` : ""}
       ${expireDate ? `<dt>Masa aktif s/d</dt><dd>${fmt(expireDate)} (Maks. 3 hari)</dd>` : ""}
     </dl>
-    ${isAdm ? takerInfo(r.id) : ""}
+    ${takerHtml}
     <div class="foot">
       <button class="btn ghost" onclick="$('dialog').close()">Tutup</button>
       ${canDelete() ? `<button class="btn bad" onclick="deleteReport(${r.id})">Hapus Laporan</button>` : ""}
       <button class="btn" onclick="chatAbout(${r.id})">
-        💬 Chat Admin tentang Barang Ini
+        ${isAdm ? `Chat ${esc(uname(r.uid) || "Pelapor")} tentang Barang Ini` : `Chat Admin tentang Barang Ini`}
       </button>
       ${isAdm && r.status === "PENDING" ? `<button class="btn sm" onclick="setR(${r.id},'ACTIVE');$('dialog').close();toast('Laporan disetujui');app()">Setujui</button>` : ""}
       ${isAdm && r.status === "FOUND" ? `<button class="btn sm" onclick="$('dialog').close();verif(${r.id})">Verifikasi Kepemilikan</button>` : ""}
@@ -2035,12 +2255,14 @@ function detailFound(id) {
   const f = DB.found.find((x) => x.id === id);
   if (!f) return;
   dlg(`
-    <div class="ph" style="border-radius:8px;margin-bottom:16px;height:160px;overflow:hidden;background:var(--soft)">
-      ${f.photo ? `<img src="${f.photo}" style="width:100%;height:100%;object-fit:contain">` : ic(IC.shield)}
+    <div class="ph modal-photo">
+      ${f.photo ? `<img src="${f.photo}" alt="${esc(f.name)}">` : ic(IC.shield)}
     </div>
-    ${badge(f.status)}
-    <h2 style="margin-top:8px">${esc(f.name)}</h2>
-    <p class="meta" style="margin:0 0 16px">${esc(f.cat)} &bull; Ditemukan di ${esc(f.loc)}</p>
+    <div class="modal-head">
+      ${badge(f.status)}
+      <h2>${esc(f.name)}</h2>
+      <p class="meta">${esc(f.cat)} &bull; Ditemukan di ${esc(f.loc)}</p>
+    </div>
     <dl class="dl">
       <dt>Warna</dt><dd>${esc(f.color || "-")}</dd>
       <dt>Merk</dt><dd>${esc(f.brand || "-")}</dd>
@@ -2154,32 +2376,131 @@ async function submitVerifReturn(id) {
   }
   const notes = $("#vnotes") ? $("#vnotes").value.trim() : "";
   const r = DB.reports.find((x) => x.id === id);
-  setR(id, "RETURNED");
-
+  if (!r) return toast("Laporan tidak ditemukan.");
   const match = DB.matches ? DB.matches.find((m) => m.lost_report_id === id) : null;
   const foundId = match ? match.found_item_id : null;
-
-  DB.returns.push({
-    id: Date.now(),
-    lost_report_id: id,
-    found_item_id: foundId,
-    user_id: r.uid,
-    verified_by: ST.user.name,
-    returned_at: new Date(),
-    notes: notes || "Barang diserahkan setelah verifikasi 5 poin lengkap.",
-    taker_name: takerName,
-    taker_nim: takerNim,
-    taker_prodi: takerProdi,
-    taker_phone: takerHp,
-    taker_photo: takerPhoto,
-    taker_receipt: takerReceipt,
-    taker_selfie: takerSelfie,
-  });
-  saveDB();
+  try {
+    const res = await API.req("/api/returns", {
+      method: "POST",
+      body: {
+        lost_report_id: id,
+        found_item_id: foundId,
+        user_id: r.uid,
+        notes: notes || "Barang diserahkan setelah verifikasi 5 poin lengkap.",
+        taker_name: takerName,
+        taker_nim: takerNim,
+        taker_prodi: takerProdi,
+        taker_phone: takerHp,
+        taker_photo: takerPhoto,
+        taker_receipt: takerReceipt,
+        taker_selfie: takerSelfie,
+        check_1_details: true,
+        check_2_contents: true,
+        check_3_proof: true,
+        check_4_identity: true,
+        check_5_signed: true,
+      },
+    });
+    toast(res.message || "Barang telah berhasil diverifikasi dan diserahkan!");
+    await refreshStore();
+  } catch (e) {
+    return toast(e.message);
+  }
   $("dialog").close();
-  toast("Barang telah berhasil diverifikasi dan diserahkan!");
   app();
 }
 
 // Initial Run
 render();
+
+
+/* Motion enhancement only: no API, storage, or business logic is changed. */
+(() => {
+  const installMotion = () => {
+    if (!document.body || !("IntersectionObserver" in window)) return;
+    const reveal = (root) => {
+      const selectors = ".tw, .stat, .head, #main > .card";
+      const nodes = [];
+      if (root.matches && root.matches(selectors)) nodes.push(root);
+      if (root.querySelectorAll) nodes.push(...root.querySelectorAll(selectors));
+      nodes.forEach((el, i) => {
+        if (el.dataset.motionReady) return;
+        el.dataset.motionReady = "1";
+        if (el.closest(".no-enter")) return;
+        el.classList.add("motion-reveal");
+        el.style.setProperty("--motion-delay", `${Math.min(i % 8, 7) * 55}ms`);
+        observer.observe(el);
+      });
+    };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const t = entry.target;
+          t.classList.add("motion-visible");
+          observer.unobserve(t);
+          // Lepas kelas animasi setelah selesai agar tidak mengganggu efek hover.
+          setTimeout(() => t.classList.remove("motion-reveal", "motion-visible"), 900);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -24px 0px" });
+    installMotion.observer = observer;
+    reveal(document.body);
+    new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+      if (node.nodeType === 1) reveal(node);
+    }))).observe(document.getElementById("root") || document.body, { childList: true, subtree: true });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installMotion, { once: true });
+  else installMotion();
+})();
+
+
+/* Small interaction polish: image previews and one-time count-up for numeric dashboard values. */
+(() => {
+  const initEnhancements = () => {
+    const root = document.getElementById("root");
+    if (!root) return;
+    const previewFile = (input) => {
+      if (!input || input.dataset.previewBound || input.type !== "file" || input.hasAttribute("onchange")) return;
+      input.dataset.previewBound = "1";
+      input.addEventListener("change", () => {
+        const file = input.files && input.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        let preview = input.parentElement && input.parentElement.querySelector(".motion-image-preview");
+        if (!preview) {
+          preview = document.createElement("img");
+          preview.className = "motion-image-preview";
+          preview.alt = "Pratinjau gambar yang dipilih";
+          preview.style.cssText = "display:block;max-width:180px;max-height:140px;object-fit:cover;border-radius:12px;margin-top:10px;box-shadow:0 6px 18px rgba(16,45,70,.12);animation:content-arrive .28s ease both";
+          input.insertAdjacentElement("afterend", preview);
+        }
+        if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
+        preview.dataset.objectUrl = URL.createObjectURL(file);
+        preview.src = preview.dataset.objectUrl;
+      });
+    };
+    const scan = (node) => {
+      if (node.nodeType !== 1) return;
+      if (node.matches && node.matches('input[type="file"]')) previewFile(node);
+      node.querySelectorAll && node.querySelectorAll('input[type="file"]').forEach(previewFile);
+    };
+    scan(root);
+    new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(scan))).observe(root, { childList:true, subtree:true });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initEnhancements, { once:true });
+  else initEnhancements();
+})();
+
+
+/* v11: cursor-aware highlight for buttons. Delegated so dynamically rendered
+   buttons also work; does not intercept clicks or change application state. */
+(() => {
+  if (window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    document.addEventListener("pointermove", (event) => {
+      const button = event.target.closest && event.target.closest(".btn:not(:disabled)");
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
+      button.style.setProperty("--v11-mx", `${((event.clientX - rect.left) / rect.width) * 100}%`);
+      button.style.setProperty("--v11-my", `${((event.clientY - rect.top) / rect.height) * 100}%`);
+    }, { passive: true });
+  }
+})();
